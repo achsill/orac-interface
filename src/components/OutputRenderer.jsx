@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import gridImage from "../assets/grid.svg"; // Adjust the path as necessary
 
@@ -9,6 +9,7 @@ function OllamaOutput() {
   const [countdown, setCountdown] = useState(null); // State to manage the countdown display
   const [isActive, setIsActive] = useState(false); // State to manage if the countdown is active
   const [isCountdownDisplayed, setIsCountdownDisplayed] = useState(false); // State to manage if the countdown is active
+  const scrollableContentRef = useRef(null);
 
   useEffect(() => {
     let intervalId;
@@ -59,6 +60,13 @@ function OllamaOutput() {
   };
 
   useEffect(() => {
+    if (scrollableContentRef.current) {
+      scrollableContentRef.current.scrollTop =
+        scrollableContentRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  useEffect(() => {
     const messageListener = (data) => {
       // Append data to the latest message block
       setMessages((prevMessages) => {
@@ -87,13 +95,9 @@ function OllamaOutput() {
   }, []);
 
   return (
-    <div
-      id="ollamaOutput"
-      className="overflow-y-auto py-2 space-y-4 h-[80vh] overflow-x-hidden"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      <div className=" h-12 bg-red flex w-screen justify-between items-center p-4">
+    <div id="ollamaOutput" className="flex flex-col h-screen m-2">
+      {/* Sticky Header */}
+      <div className="bg-red flex justify-between items-center p-4 fixed top-0 left-0 right-0 m-2 z-10">
         {isCountdownDisplayed ? (
           <div>
             closing in {countdown}{" "}
@@ -117,24 +121,30 @@ function OllamaOutput() {
           close
         </button>
       </div>
-      {messages.map(
-        (message, index) =>
-          message.trim() !== "" && ( // Check if the message is not an empty string
-            <div
-              key={index}
-              className="rounded-xl p-4 text-white text-left" // Styling for each message block
-            >
-              <ReactMarkdown>{message || ""}</ReactMarkdown>
-            </div>
-          )
-      )}
+
+      {/* Scrollable Content Area */}
+      <div
+        ref={scrollableContentRef}
+        className="flex-1 overflow-y-auto py-2 space-y-4 mt-16 mb-16"
+      >
+        {messages.map(
+          (message, index) =>
+            message.trim() !== "" && (
+              <div key={index} className="rounded-xl p-4 text-white text-left">
+                <ReactMarkdown>{message || ""}</ReactMarkdown>
+              </div>
+            )
+        )}
+      </div>
+
+      {/* Sticky Footer */}
       <form
-        className="h-12 w-screen fixed  bottom-0 left-0 p-2"
+        className="fixed bottom-0 left-0 right-0 py-2 px-4 m-2 bg-black/70 rounded-xl"
         onSubmit={handleSubmit}
       >
         <input
           type="text"
-          className="w-full h-full focus:outline-none  bg-transparent"
+          className="w-full h-full focus:outline-none bg-transparent text-white"
           value={inputValue}
           onChange={handleChange}
           placeholder="ask me a question"

@@ -165,7 +165,7 @@ function createOutputWindow() {
 
   // Load the HTML file or content you want to display in the output window
   outputWindow.loadURL(OUTPUT_WINDOW_WEBPACK_ENTRY);
-  // outputWindow.webContents.openDevTools();
+  outputWindow.webContents.openDevTools();
 
   outputWindow.on("closed", () => {
     outputWindow = null;
