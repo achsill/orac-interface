@@ -128,7 +128,6 @@ ipcMain.on("user-input", async (event, input: string) => {
       stream: true,
     });
     for await (const part of response) {
-      console.log(part);
       outputWindow?.webContents.send("ollama-output", part.message.content);
     }
 
@@ -136,6 +135,10 @@ ipcMain.on("user-input", async (event, input: string) => {
   } catch (e) {
     console.log(e);
   }
+});
+
+ipcMain.on("close-output-window", async (event, input: string) => {
+  outputWindow?.close();
 });
 
 // _________
@@ -162,7 +165,7 @@ function createOutputWindow() {
 
   // Load the HTML file or content you want to display in the output window
   outputWindow.loadURL(OUTPUT_WINDOW_WEBPACK_ENTRY);
-  outputWindow.webContents.openDevTools();
+  // outputWindow.webContents.openDevTools();
 
   outputWindow.on("closed", () => {
     outputWindow = null;
