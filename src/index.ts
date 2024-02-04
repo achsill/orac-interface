@@ -123,7 +123,7 @@ ipcMain.on("user-input", async (event, input: string) => {
   try {
     const message = { role: "user", content: input };
     const response = await ollama.chat({
-      model: "mistral",
+      model: "llava",
       messages: [message],
       stream: true,
     });

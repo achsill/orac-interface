@@ -37,7 +37,7 @@ function UserInput() {
         type="text"
         value={inputValue}
         onChange={handleChange}
-        placeholder="ask me a question"
+        placeholder="How can I help you?"
       />
       <button type="submit" className="hidden">
         Submit
