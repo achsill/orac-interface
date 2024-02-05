@@ -12,6 +12,7 @@ contextBridge.exposeInMainWorld("api", {
   receive: (channel: any, func: Function) => {
     let validChannels = ["ollama-output", "ollama-output-end", "ollama-input"];
     if (validChannels.includes(channel)) {
+      console.log(channel);
       // Deliberately strip event as it includes `sender`
       ipcRenderer.on(channel, (event, ...args) => func(...args));
     }

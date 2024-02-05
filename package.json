@@ -24,6 +24,7 @@
     "@electron-forge/maker-zip": "^7.2.0",
     "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
     "@electron-forge/plugin-webpack": "^7.2.0",
+    "@types/react-highlight": "^0.12.8",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
@@ -50,9 +51,12 @@
   "dependencies": {
     "electron-reload": "^2.0.0-alpha.1",
     "electron-squirrel-startup": "^1.0.0",
+    "highlight.js": "^11.9.0",
     "ollama": "^0.4.4",
     "react": "^18.2.0",
+    "react-code-blocks": "^0.1.6",
     "react-dom": "^18.2.0",
+    "react-highlight": "^0.15.0",
     "react-markdown": "^9.0.1"
   }
 }
