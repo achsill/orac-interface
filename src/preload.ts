@@ -4,7 +4,12 @@ const { contextBridge, ipcRenderer } = require("electron");
 contextBridge.exposeInMainWorld("api", {
   send: (channel: any, data: any) => {
     // Only allow sending messages for specific channels for security
-    let validChannels = ["user-input", "close-output-window"];
+    let validChannels = [
+      "user-input",
+      "close-output-window",
+      "close-input-window",
+      "extend-input-window",
+    ];
     if (validChannels.includes(channel)) {
       ipcRenderer.send(channel, data);
     }

@@ -49,12 +49,13 @@ const createWindow = (): void => {
       nodeIntegration: false,
     },
   });
+  mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
 
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 
   mainWindow.on("closed", () => {
     mainWindow = null;
@@ -74,7 +75,7 @@ app.on("ready", () => {
     if (!mainWindow) {
       createWindow();
     } else {
-      mainWindow.focus(); // If the window already exists, bring it to the front
+      mainWindow.focus();
     }
   });
 
@@ -146,7 +147,14 @@ ipcMain.on("close-output-window", async (event, input: string) => {
   outputWindow?.close();
 });
 
-// _________
+ipcMain.on("extend-input-window", async (event, input: string) => {
+  console.log("??");
+  mainWindow.setSize(420, 420, true);
+});
+
+ipcMain.on("close-input-window", async (event, input: string) => {
+  mainWindow?.close();
+});
 
 function createOutputWindow() {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
@@ -171,6 +179,7 @@ function createOutputWindow() {
 
   // Load the HTML file or content you want to display in the output window
   outputWindow.loadURL(OUTPUT_WINDOW_WEBPACK_ENTRY);
+  outputWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   outputWindow.webContents.openDevTools();
 
   outputWindow.on("closed", () => {

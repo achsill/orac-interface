@@ -175,7 +175,7 @@ function OllamaOutput() {
           className="w-full h-full focus:outline-none bg-transparent text-white"
           value={inputValue}
           onChange={handleChange}
-          placeholder="How can I help you?"
+          placeholder="Let's keep talking 🕺"
         />
         <button type="submit" className="hidden">
           Submit
