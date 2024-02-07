@@ -43,7 +43,7 @@ function UserInput({ isOriginExtanded }) {
 
   const handleChange = (event) => {
     const { value } = event.target;
-    setInputValue(event.target);
+    setInputValue(value);
   };
 
   const handlePaste = (event) => {
@@ -53,7 +53,7 @@ function UserInput({ isOriginExtanded }) {
     // Check if the pasted text contains newline characters
     if (paste.includes("\n")) {
       setIsInputExpanded(true);
-      window.api.send("extend-input-window"); // Call your function
+      window.api.send("extend-input-window"); // Call your function    }
     }
   };
 
