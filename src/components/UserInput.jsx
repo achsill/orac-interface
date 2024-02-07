@@ -2,10 +2,11 @@ import React, { useState, useRef, useEffect } from "react";
 import logo from "../assets/logo.png"; // Adjust the path as necessary
 import grid from "../assets/grid.svg"; // Adjust the path as necessary
 
-function UserInput() {
+function UserInput({ isOriginExtanded }) {
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef(null); // Create a ref for the input element
   const formRef = useRef(null); // Create a ref for the form element
+  const [isinputExpanded, setIsInputExpanded] = useState(isOriginExtanded);
 
   useEffect(() => {
     // Automatically focus the input element when the component mounts
@@ -18,7 +19,7 @@ function UserInput() {
         window.api.send("close-input-window", inputValue);
       }
       if (event.shiftKey && event.key === "Enter") {
-        console.log("hehe");
+        setIsInputExpanded(true);
         event.preventDefault(); // Prevent the default action (Enter = submit in form)
         window.api.send("extend-input-window"); // Call your function
       }
@@ -44,9 +45,14 @@ function UserInput() {
     setInputValue(event.target.value);
   };
 
-  const handleBlur = () => {
-    // Trigger when the input loses focus
-    window.api.send("close-input-window", inputValue);
+  const handleTextAreaKeyDown = (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault(); // Prevent the default Enter action (new line)
+      handleSubmit(event); // Call the submit form function
+    } else if (event.key === "Enter" && event.shiftKey) {
+      setInputValue(inputValue + "\n");
+    }
+    // Shift + Enter is allowed by default, so no need for additional handling
   };
 
   const handleSubmit = (e) => {
@@ -59,22 +65,42 @@ function UserInput() {
 
   return (
     <form
-      ref={formRef} // Attach the ref to the form element
-      className="flex  w-screen h-screen bg-black/80 justify-center items-center"
+      ref={formRef}
+      className="flex h-full w-full  justify-center items-start"
       onSubmit={handleSubmit}
     >
-      <img src={grid} className="2-6 h-3 px-4" alt="Logo" />{" "}
-      <input
-        ref={inputRef} // Attach the ref to the input element
-        className="text-white focus:outline-none font-bold py-2 pr-4 rounded flex-1 bg-transparent"
-        type="text"
-        value={inputValue}
-        onChange={handleChange}
-        placeholder="How can I help you?"
-      />
-      <button type="submit" className="hidden">
-        Submit
-      </button>
+      {isinputExpanded ? (
+        <div className="flex h-full w-full items-start">
+          <div className="h-full flex align-start px-4">
+            <img src={grid} className="mt-[0.42rem] h-3" alt="Logo" />{" "}
+          </div>
+          <textarea
+            value={inputValue}
+            placeholder="How can I help you?"
+            onChange={handleChange}
+            onKeyDown={handleTextAreaKeyDown}
+            className="text-white resize-none w-full focus:outline-none h-full font-bold bg-transparent"
+          ></textarea>
+          <div className=" w-full justify-end gap-4 px-6 py-3 items-end text-white hidden">
+            <button type="submit">send</button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex justify-start items-center w-full h-full gap-4 mx-4">
+          <img src={grid} className=" h-3 " alt="Logo" />{" "}
+          <input
+            ref={inputRef}
+            className="text-white focus:outline-none font-bold rounded flex-1 bg-transparent"
+            type="text"
+            value={inputValue}
+            onChange={handleChange}
+            placeholder="How can I help you?"
+          />
+          <button type="submit" className="hidden">
+            Submit
+          </button>
+        </div>
+      )}
     </form>
   );
 }

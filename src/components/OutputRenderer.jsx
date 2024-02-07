@@ -3,6 +3,7 @@ import ReactMarkdown from "react-markdown";
 import gridIconAnimated from "../assets/grid.svg"; // Adjust the path as necessary
 import gridIconFixed from "../assets/grid.png"; // Adjust the path as necessary
 import { CopyBlock, irBlack } from "react-code-blocks";
+import UserInput from "./UserInput";
 import hljs from "highlight.js";
 
 function OllamaOutput() {
@@ -114,25 +115,10 @@ function OllamaOutput() {
   }, []);
 
   return (
-    <div id="ollamaOutput" className="flex flex-col h-screen m-2">
-      {/* Sticky Header */}
-      <div
-        id="header"
-        className="bg-red flex justify-between items-center p-4 fixed top-0 left-0 right-0 m-2 z-10"
-      >
-        {/* <img className="w-3 h-3" src={icon} alt="Grid" />
-        <button
-          className="underline hover:text-red-500 cursor-pointer"
-          onClick={closeWindow}
-        >
-          close
-        </button> */}
-      </div>
-
-      {/* Scrollable Content Area */}
+    <div id="ollamaOutput" className="flex flex-col h-screen">
       <div
         ref={scrollableContentRef}
-        className="flex-1 overflow-y-auto py-2 space-y-4 mt-16 mb-16"
+        className="flex-1 overflow-y-auto space-y-4 mt-8 p-6"
       >
         {messages.map(
           (message, index) =>
@@ -140,7 +126,7 @@ function OllamaOutput() {
               <div
                 key={index}
                 className={`rounded-xl p-1 text-left ${
-                  message.type === "input" ? "text-red-400" : "white"
+                  message.type === "input" ? "text-indigo-500" : "white"
                 }`}
               >
                 {parseMessage(message.text).map((segment, segmentIndex) =>
@@ -165,22 +151,9 @@ function OllamaOutput() {
       </div>
 
       {/* Sticky Footer */}
-      <form
-        className="fixed bottom-0 left-0 justify-content items-center gap-4 flex right-0 py-2 px-4 m-2 bg-black/70 rounded-xl"
-        onSubmit={handleSubmit}
-      >
-        <img className="w-3 h-3" src={icon} alt="Grid" />
-        <input
-          type="text"
-          className="w-full h-full focus:outline-none bg-transparent text-white"
-          value={inputValue}
-          onChange={handleChange}
-          placeholder="Let's keep talking 🕺"
-        />
-        <button type="submit" className="hidden">
-          Submit
-        </button>
-      </form>
+      <div className="flex-[0.25] flex items-start w-full border-t border-dashed border-indigo-500 pt-3">
+        <UserInput isOriginExtanded={true} />
+      </div>
     </div>
   );
 }

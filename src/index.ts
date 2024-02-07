@@ -148,8 +148,7 @@ ipcMain.on("close-output-window", async (event, input: string) => {
 });
 
 ipcMain.on("extend-input-window", async (event, input: string) => {
-  console.log("??");
-  mainWindow.setSize(420, 420, true);
+  mainWindow.setSize(560, 420, true);
 });
 
 ipcMain.on("close-input-window", async (event, input: string) => {
