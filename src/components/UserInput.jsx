@@ -42,7 +42,19 @@ function UserInput({ isOriginExtanded }) {
   }, []);
 
   const handleChange = (event) => {
-    setInputValue(event.target.value);
+    const { value } = event.target;
+    setInputValue(event.target);
+  };
+
+  const handlePaste = (event) => {
+    // Get pasted text
+    const paste = (event.clipboardData || window.clipboardData).getData("text");
+    setInputValue(paste);
+    // Check if the pasted text contains newline characters
+    if (paste.includes("\n")) {
+      setIsInputExpanded(true);
+      window.api.send("extend-input-window"); // Call your function
+    }
   };
 
   const handleTextAreaKeyDown = (event) => {
@@ -94,6 +106,7 @@ function UserInput({ isOriginExtanded }) {
             type="text"
             value={inputValue}
             onChange={handleChange}
+            onPaste={handlePaste} // Add this line
             placeholder="How can I help you?"
           />
           <button type="submit" className="hidden">
