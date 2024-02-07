@@ -38,20 +38,19 @@ body {
 
 /* width */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
+  height: 8px;
+  max-height: 8px;
+  max-width: 8px;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #000000e6;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: transparent;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: transparent;
+  background: rgb(99 102 241);
+  border-radius: 20px;
 }
