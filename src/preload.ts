@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld("api", {
       "extend-input-window",
       "settings-button-clicked",
       "update-model",
+      "close-setting-window",
     ];
     if (validChannels.includes(channel)) {
       ipcRenderer.send(channel, data);
@@ -26,7 +27,6 @@ contextBridge.exposeInMainWorld("api", {
       "ollama-error",
       "init-model-name",
     ];
-    console.log("??oula");
     if (validChannels.includes(channel)) {
       console.log(channel);
       ipcRenderer.on(channel, (event, ...args) => func(...args));

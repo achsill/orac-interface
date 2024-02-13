@@ -38,8 +38,8 @@ const createInstallerWindow = (): void => {
   const { width } = screen.getPrimaryDisplay().workAreaSize;
 
   installerWindow = new BrowserWindow({
-    width: 240,
-    height: 240,
+    width: 420,
+    height: 420,
     titleBarStyle: "hidden",
     movable: true,
     resizable: false,
@@ -311,6 +311,10 @@ ipcMain.on("update-model", async (event, input: string) => {
 
 ipcMain.on("extend-input-window", async (event, input: string) => {
   mainWindow.setSize(560, 420, true);
+});
+
+ipcMain.on("close-setting-window", async (event, input: string) => {
+  installerWindow?.close();
 });
 
 ipcMain.on("close-input-window", async (event, input: string) => {
