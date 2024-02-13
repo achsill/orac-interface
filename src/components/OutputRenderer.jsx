@@ -13,10 +13,6 @@ function OllamaOutput() {
   const scrollableContentRef = useRef(null);
   const [icon, setIcon] = useState(gridIconFixed);
 
-  const handleChange = (event) => {
-    setInputValue(event.target.value);
-  };
-
   const parseMessage = (text) => {
     const segments = [];
     const regex = /```(.*?)```/gs;
@@ -43,6 +39,10 @@ function OllamaOutput() {
     }
 
     return segments;
+  };
+
+  const openSettingsWindow = () => {
+    window.api.send("settings-button-clicked");
   };
 
   const closeWindow = () => {
@@ -102,6 +102,14 @@ function OllamaOutput() {
       ]);
     };
 
+    const displayError = (data) => {
+      console.log(data);
+      setMessages((prevMessages) => {
+        return [...prevMessages, { text: data, type: "output" }];
+      });
+    };
+
+    window.api.receive("ollama-error", displayError);
     window.api.receive("ollama-output", messageListener);
     window.api.receive("ollama-output-end", messageEnd);
     window.api.receive("ollama-input", inputListener);
@@ -116,9 +124,21 @@ function OllamaOutput() {
 
   return (
     <div id="ollamaOutput" className="flex flex-col h-screen">
+      <div className="flex w-full">
+        <div id="head" className="w-3/4 h-8">
+          {" "}
+        </div>
+        <button
+          onClick={openSettingsWindow}
+          id="buttonSettings"
+          className="text-xs underline fixed right-4 top-4 cursor-pointer"
+        >
+          Settings
+        </button>
+      </div>
       <div
         ref={scrollableContentRef}
-        className="flex-1 overflow-y-auto space-y-4 mt-8 p-6"
+        className="flex-1 overflow-y-auto space-y-4 p-6"
       >
         {messages.map(
           (message, index) =>
@@ -150,8 +170,7 @@ function OllamaOutput() {
         )}
       </div>
 
-      {/* Sticky Footer */}
-      <div className="flex-[0.25] flex items-start w-full border-t border-dashed border-indigo-500 pt-3">
+      <div className="flex-[0.25] flex items-start  m-4 rounded pt-3">
         <UserInput isOriginExtanded={true} />
       </div>
     </div>

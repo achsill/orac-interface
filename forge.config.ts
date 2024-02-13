@@ -36,9 +36,17 @@ const config: ForgeConfig = {
             },
           },
           {
-            html: "./src/output_window.html", // Path to your output window HTML
-            js: "./src/output_renderer.ts", // Path to your output window's renderer process script (if any)
-            name: "output_window", // Name it differently to distinguish it
+            html: "./src/output_window.html",
+            js: "./src/output_renderer.ts",
+            name: "output_window",
+            preload: {
+              js: "./src/preload.ts",
+            },
+          },
+          {
+            html: "./src/installer_window.html",
+            js: "./src/installer_renderer.ts",
+            name: "installer_window",
             preload: {
               js: "./src/preload.ts",
             },

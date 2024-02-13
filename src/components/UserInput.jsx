@@ -43,6 +43,7 @@ function UserInput({ isOriginExtanded }) {
 
   const handleChange = (event) => {
     const { value } = event.target;
+    console.log("?");
     setInputValue(value);
   };
 
@@ -102,7 +103,7 @@ function UserInput({ isOriginExtanded }) {
           <img src={grid} className=" h-3 " alt="Logo" />{" "}
           <input
             ref={inputRef}
-            className="text-white focus:outline-none font-bold rounded flex-1 bg-transparent"
+            className="text-white focus:outline-none font-bold flex-1 bg-transparent"
             type="text"
             value={inputValue}
             onChange={handleChange}

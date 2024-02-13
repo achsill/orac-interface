@@ -9,16 +9,26 @@ contextBridge.exposeInMainWorld("api", {
       "close-output-window",
       "close-input-window",
       "extend-input-window",
+      "settings-button-clicked",
+      "update-model",
     ];
     if (validChannels.includes(channel)) {
       ipcRenderer.send(channel, data);
     }
   },
   receive: (channel: any, func: Function) => {
-    let validChannels = ["ollama-output", "ollama-output-end", "ollama-input"];
+    let validChannels = [
+      "ollama-output",
+      "ollama-output-end",
+      "ollama-input",
+      "installer-progression",
+      "check-ollama",
+      "ollama-error",
+      "init-model-name",
+    ];
+    console.log("??oula");
     if (validChannels.includes(channel)) {
       console.log(channel);
-      // Deliberately strip event as it includes `sender`
       ipcRenderer.on(channel, (event, ...args) => func(...args));
     }
   },
