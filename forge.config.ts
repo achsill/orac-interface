@@ -29,7 +29,7 @@ const config: ForgeConfig = {
         entryPoints: [
           {
             html: "./src/index.html",
-            js: "./src/renderer.ts",
+            js: "./src/index_searchbar.jsx",
             name: "main_window",
             preload: {
               js: "./src/preload.ts",
@@ -37,7 +37,7 @@ const config: ForgeConfig = {
           },
           {
             html: "./src/output_window.html",
-            js: "./src/output_renderer.ts",
+            js: "./src/index_output.jsx",
             name: "output_window",
             preload: {
               js: "./src/preload.ts",
@@ -45,7 +45,7 @@ const config: ForgeConfig = {
           },
           {
             html: "./src/installer_window.html",
-            js: "./src/installer_renderer.ts",
+            js: "./src/index_installer.jsx",
             name: "installer_window",
             preload: {
               js: "./src/preload.ts",

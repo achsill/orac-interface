@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import logo from "../assets/logo.png"; // Adjust the path as necessary
 import grid from "../assets/grid.svg"; // Adjust the path as necessary
 
 function UserInput({ isOriginExtanded }) {

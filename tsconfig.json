@@ -17,5 +17,10 @@
     "jsx": "react-jsx"
   },
 
-  "include": ["src/**/*"]
+  "include": [
+    "src/main/**/*",
+    "src/renderer/**/*",
+    "src/common/**/*",
+    "src/**/*"
+  ]
 }
