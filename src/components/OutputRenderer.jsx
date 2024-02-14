@@ -131,7 +131,7 @@ function OllamaOutput() {
         <button
           onClick={openSettingsWindow}
           id="buttonSettings"
-          className="text-xs underline fixed right-4 top-4 cursor-pointer"
+          className="text-xs underline fixed right-4 top-4 cursor-pointer hover:text-neutral-500"
         >
           Settings
         </button>
