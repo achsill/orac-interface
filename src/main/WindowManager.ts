@@ -66,7 +66,6 @@ class WindowManager {
     this.outputWindow.setVisibleOnAllWorkspaces(true, {
       visibleOnFullScreen: true,
     });
-    this.outputWindow.webContents.openDevTools();
   }
 
   createSettingsWindow() {

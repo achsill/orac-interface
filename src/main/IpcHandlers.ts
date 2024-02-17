@@ -18,27 +18,34 @@ const handleUserInput = async (input: string) => {
   if (windowManager?.searchWindow) {
     windowManager.closeSearchWindow();
   }
-  setTimeout(() => sendMessageToOutputWindow("ia-input", input), 200);
+  const modelName = store.get("modelName");
+  sendMessageToOutputWindow("ia-input", input);
+  if (modelName) {
+    try {
+      const message = {
+        role: "user",
+        content: input,
+      };
+      const response = await ollama.chat({
+        model: store.get("modelName"),
+        messages: [message],
+        stream: true,
+        keep_alive: -1,
+      });
 
-  try {
-    const message = {
-      role: "user",
-      content: input,
-    };
-    const response = await ollama.chat({
-      model: store.get("modelName"),
-      messages: [message],
-      stream: true,
-      keep_alive: -1,
-    });
+      for await (const part of response) {
+        sendMessageToOutputWindow("ia-output", part.message.content);
+      }
 
-    for await (const part of response) {
-      sendMessageToOutputWindow("ia-output", part.message.content);
+      sendMessageToOutputWindow("ia-output-end", null);
+    } catch (e) {
+      handleError(e);
     }
-
-    sendMessageToOutputWindow("ia-output-end", null);
-  } catch (e) {
-    handleError(e);
+  } else {
+    sendMessageToOutputWindow(
+      "ia-error",
+      "Go to the settings to configure the model you want to target."
+    );
   }
 };
 

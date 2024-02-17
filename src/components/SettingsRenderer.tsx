@@ -83,7 +83,7 @@ const SettingsWindow: React.FC = () => {
             onChange={handleChange}
             className="bg-neutral-800 rounded p-4 w-full focus:outline-none focus:border focus:border-neutral-700 border border-transparent"
             value={modelName}
-            placeholder="e.g., llama, mixtral"
+            placeholder="e.g. llama, mixtral"
           />
         </div>
         <button

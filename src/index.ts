@@ -3,7 +3,7 @@ import { windowManager } from "./main/WindowManager";
 import { setupIpcHandlers } from "./main/IpcHandlers";
 
 function registerGlobalShortcuts() {
-  const ret = globalShortcut.register("Ctrl+Space", () => {
+  const ret = globalShortcut.register("Shift+Space", () => {
     if (!windowManager.searchWindow) {
       windowManager.createSearchWindow();
     } else {
