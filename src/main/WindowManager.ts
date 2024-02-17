@@ -95,6 +95,12 @@ class WindowManager {
     }
   }
 
+  minimizeSearchWindow() {
+    if (this.searchWindow) {
+      this.searchWindow.minimize();
+    }
+  }
+
   closeOutputWindow() {
     if (this.outputWindow) {
       this.outputWindow.close();

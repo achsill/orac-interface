@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld("api", {
       "settings-button-clicked",
       "update-model",
       "close-setting-window",
+      "minimize-search-window",
     ];
     if (validChannels.includes(channel)) {
       ipcRenderer.send(channel, data);

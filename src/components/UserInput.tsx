@@ -24,7 +24,7 @@ function UserInput({ isOriginExtanded }: InputParams) {
 
     const handleKeyDown = (event: any) => {
       if (event.key === "Escape") {
-        window.api.send("close-input-window", inputValue);
+        window.api.send("minimize-search-window", inputValue);
       }
       if (event.shiftKey && event.key === "Enter") {
         setIsInputExpanded(true);
