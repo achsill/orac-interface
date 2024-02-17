@@ -16,7 +16,7 @@ const handleUserInput = async (input: string) => {
     windowManager.createOutputWindow();
   }
   if (windowManager?.searchWindow) {
-    windowManager.closeSearchWindow();
+    windowManager.minimizeSearchWindow();
   }
   const modelName = store.get("modelName");
   sendMessageToOutputWindow("ia-input", input);
