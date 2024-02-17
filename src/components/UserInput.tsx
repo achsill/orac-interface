@@ -36,7 +36,7 @@ function UserInput({ isOriginExtanded }: InputParams) {
     // Add event listener for the Escape key
     const handleClickOutside = (event: any) => {
       if (formRef.current && !formRef.current.contains(event.target)) {
-        window.api.send("close-input-window", inputValue);
+        window.api.send("minimize-search-window", inputValue);
       }
     };
 

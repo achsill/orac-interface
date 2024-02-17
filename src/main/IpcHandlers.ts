@@ -106,7 +106,7 @@ export function setupIpcHandlers() {
   });
 
   ipcMain.on("minimize-search-window", async () => {
-    windowManager.closeSearchWindow();
+    windowManager.minimizeSearchWindow();
   });
 
   ipcMain.on("close-input-window", async () => {
