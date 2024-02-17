@@ -3,7 +3,7 @@ import { windowManager } from "./main/WindowManager";
 import { setupIpcHandlers } from "./main/IpcHandlers";
 
 function registerGlobalShortcuts() {
-  const ret = globalShortcut.register("Shift+Space", () => {
+  const ret = globalShortcut.register("Ctrl+Space", () => {
     if (!windowManager.searchWindow) {
       windowManager.createSearchWindow();
     } else {
@@ -29,11 +29,11 @@ function setupAppLifecycle() {
     globalShortcut.unregisterAll();
   });
 
-  app.on("window-all-closed", () => {
-    if (process.platform !== "darwin") {
-      app.quit();
-    }
-  });
+  // app.on("window-all-closed", () => {
+  //   if (process.platform !== "darwin") {
+  //     app.quit();
+  //   }
+  // });
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
