@@ -2,29 +2,12 @@ import { app, BrowserWindow, globalShortcut } from "electron";
 import { windowManager } from "./main/WindowManager";
 import { setupIpcHandlers } from "./main/IpcHandlers";
 
-// function setupDevelopmentEnvironment() {
-//   const env = process.env.NODE_ENV || "development";
-//   if (env === "development") {
-//     try {
-//       require("electron-reloader")(module, {
-//         debug: true,
-//         watchRenderer: true,
-//       });
-//     } catch (error) {
-//       console.error("Failed to load electron-reloader:", error);
-//     }
-//   }
-// }
-
 function registerGlobalShortcuts() {
-  const ret = globalShortcut.register("Command+`", () => {
-    console.log("Command+` is pressed");
+  const ret = globalShortcut.register("Ctrl+Space", () => {
     if (!windowManager.searchWindow) {
       windowManager.createSearchWindow();
     } else {
-      windowManager.createSearchWindow();
-      //  Logique à revoir !!
-      // windowManager.searchWindow.focus();
+      windowManager.searchWindow.focus();
     }
   });
 
@@ -59,5 +42,4 @@ function setupAppLifecycle() {
   });
 }
 
-// setupDevelopmentEnvironment();
 setupAppLifecycle();

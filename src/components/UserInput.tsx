@@ -1,7 +1,16 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  TextareaHTMLAttributes,
+} from "react";
 import grid from "../assets/grid.svg"; // Adjust the path as necessary
 
-function UserInput({ isOriginExtanded }) {
+interface InputParams {
+  isOriginExtanded?: boolean;
+}
+
+function UserInput({ isOriginExtanded }: InputParams) {
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef(null); // Create a ref for the input element
   const formRef = useRef(null); // Create a ref for the form element
@@ -13,7 +22,7 @@ function UserInput({ isOriginExtanded }) {
       inputRef.current.focus();
     }
 
-    const handleKeyDown = (event) => {
+    const handleKeyDown = (event: any) => {
       if (event.key === "Escape") {
         window.api.send("close-input-window", inputValue);
       }
@@ -25,7 +34,7 @@ function UserInput({ isOriginExtanded }) {
     };
 
     // Add event listener for the Escape key
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: any) => {
       if (formRef.current && !formRef.current.contains(event.target)) {
         window.api.send("close-input-window", inputValue);
       }
@@ -40,15 +49,18 @@ function UserInput({ isOriginExtanded }) {
     };
   }, []);
 
-  const handleChange = (event) => {
+  const handleChange = (
+    event:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     const { value } = event.target;
-    console.log("?");
     setInputValue(value);
   };
 
-  const handlePaste = (event) => {
-    // Get pasted text
-    const paste = (event.clipboardData || window.clipboardData).getData("text");
+  const handlePaste = (event: React.ClipboardEvent) => {
+    // Get pasted text  || window.clipboardData to add below
+    const paste = event.clipboardData.getData("text");
     setInputValue(paste);
     // Check if the pasted text contains newline characters
     if (paste.includes("\n")) {
@@ -57,7 +69,7 @@ function UserInput({ isOriginExtanded }) {
     }
   };
 
-  const handleTextAreaKeyDown = (event) => {
+  const handleTextAreaKeyDown = (event: any) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault(); // Prevent the default Enter action (new line)
       handleSubmit(event); // Call the submit form function
@@ -67,7 +79,7 @@ function UserInput({ isOriginExtanded }) {
     // Shift + Enter is allowed by default, so no need for additional handling
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault(); // Prevent the default form submission behavior
     if (inputValue.trim() !== "") {
       window.api.send("user-input", inputValue);

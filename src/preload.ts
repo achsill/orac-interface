@@ -3,7 +3,6 @@ const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("api", {
   send: (channel: any, data: any) => {
-    // Only allow sending messages for specific channels for security
     let validChannels = [
       "user-input",
       "close-output-window",
@@ -19,16 +18,15 @@ contextBridge.exposeInMainWorld("api", {
   },
   receive: (channel: any, func: Function) => {
     let validChannels = [
-      "ollama-output",
-      "ollama-output-end",
-      "ollama-input",
+      "ia-output",
+      "ia-output-end",
+      "ia-input",
       "installer-progression",
-      "check-ollama",
-      "ollama-error",
+      "check-ia",
+      "ia-error",
       "init-model-name",
     ];
     if (validChannels.includes(channel)) {
-      console.log(channel);
       ipcRenderer.on(channel, (event, ...args) => func(...args));
     }
   },

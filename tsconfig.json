@@ -5,6 +5,7 @@
     "module": "commonjs",
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "strict": false,
     "noImplicitAny": true,
     "sourceMap": true,
     "baseUrl": ".",
@@ -21,6 +22,9 @@
     "src/main/**/*",
     "src/renderer/**/*",
     "src/common/**/*",
+    "src/settings/**/*",
+    "src/search/**/*",
+    "src/output/**/*",
     "src/**/*"
   ]
 }

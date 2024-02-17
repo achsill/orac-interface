@@ -6,31 +6,38 @@ import { CopyBlock, irBlack } from "react-code-blocks";
 import UserInput from "./UserInput";
 import hljs from "highlight.js";
 
-function OllamaOutput() {
+interface Segment {
+  text: string;
+  isCode: boolean;
+  language: string;
+}
+
+function OutputRenderer() {
   // Use an array to store blocks of messages
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const scrollableContentRef = useRef(null);
   const [icon, setIcon] = useState(gridIconFixed);
 
-  const parseMessage = (text) => {
+  const parseMessage = (text: string) => {
     const segments = [];
     const regex = /```(.*?)```/gs;
 
     let lastIndex = 0;
-    text.replace(regex, (match, code, index) => {
+    text.replace(regex, (match: string, ...args: any[]): string => {
       // Push preceding non-code text if it exists
-      if (index > lastIndex) {
-        segments.push({ text: text.slice(lastIndex, index), isCode: false });
+      if (args[1] > lastIndex) {
+        segments.push({ text: text.slice(lastIndex, args[1]), isCode: false });
       }
       // Detect language and push code block
-      const detectedLanguage = hljs.highlightAuto(code).language;
+      const detectedLanguage = hljs.highlightAuto(args[0]).language;
       segments.push({
-        text: code,
+        text: args[0],
         isCode: true,
         language: detectedLanguage || "plaintext",
       });
-      lastIndex = index + match.length;
+      lastIndex = args[1] + match.length;
+      return "hehe";
     });
 
     // Push remaining non-code text if it exists
@@ -50,7 +57,7 @@ function OllamaOutput() {
     window.api.send("close-output-window", inputValue);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevent the default form submission behavior
     window.api.send("user-input", inputValue);
     setIcon(gridIconAnimated);
@@ -65,23 +72,19 @@ function OllamaOutput() {
   }, [messages]);
 
   useEffect(() => {
-    const messageListener = (data) => {
+    const messageListener = (data: string) => {
       setMessages((prevMessages) => {
-        // Check if the last message is of type "output" to continue appending to it
         if (
           prevMessages.length > 0 &&
           prevMessages[prevMessages.length - 1].type === "output"
         ) {
-          // Create a new array to avoid direct state mutation
           const updatedMessages = [...prevMessages];
-          // Append the new data to the last message's text
           updatedMessages[updatedMessages.length - 1] = {
             ...updatedMessages[updatedMessages.length - 1],
             text: updatedMessages[updatedMessages.length - 1].text + data,
           };
           return updatedMessages;
         } else {
-          // If the last message is not of type "output", add a new message
           return [...prevMessages, { text: data, type: "output" }];
         }
       });
@@ -95,39 +98,35 @@ function OllamaOutput() {
       setIcon(gridIconFixed);
     };
 
-    const inputListener = (data) => {
+    const inputListener = (data: string) => {
       setMessages((prevMessages) => [
         ...prevMessages,
         { text: data, type: "input" }, // Specify message type as "input"
       ]);
     };
 
-    const displayError = (data) => {
-      console.log(data);
+    const displayError = (data: string) => {
       setMessages((prevMessages) => {
         return [...prevMessages, { text: data, type: "output" }];
       });
     };
 
-    window.api.receive("ollama-error", displayError);
-    window.api.receive("ollama-output", messageListener);
-    window.api.receive("ollama-output-end", messageEnd);
-    window.api.receive("ollama-input", inputListener);
+    window.api.receive("ia-error", displayError);
+    window.api.receive("ia-output", messageListener);
+    window.api.receive("ia-output-end", messageEnd);
+    window.api.receive("ia-input", inputListener);
 
-    // Cleanup the effect
     return () => {
-      window.api.removeListener("ollama-output", messageListener);
-      window.api.removeListener("ollama-output-end", messageEnd);
-      window.api.removeListener("ollama-input", inputListener);
+      window.api.removeListener("ia-output", messageListener);
+      window.api.removeListener("ia-output-end", messageEnd);
+      window.api.removeListener("ia-input", inputListener);
     };
   }, []);
 
   return (
     <div id="ollamaOutput" className="flex flex-col h-screen">
       <div className="flex w-full">
-        <div id="head" className="w-3/4 h-8">
-          {" "}
-        </div>
+        <div id="head" className="w-3/4 h-8"></div>
         <button
           onClick={openSettingsWindow}
           id="buttonSettings"
@@ -149,21 +148,22 @@ function OllamaOutput() {
                   message.type === "input" ? "text-indigo-500" : "white"
                 }`}
               >
-                {parseMessage(message.text).map((segment, segmentIndex) =>
-                  segment.isCode ? (
-                    <span className="py-8">
-                      <CopyBlock
-                        language={segment.language}
-                        key={segmentIndex}
-                        text={segment.text}
-                        theme={irBlack}
-                      />
-                    </span>
-                  ) : (
-                    <ReactMarkdown key={segmentIndex}>
-                      {segment.text}
-                    </ReactMarkdown>
-                  )
+                {parseMessage(message.text).map(
+                  (segment: Segment, segmentIndex) =>
+                    segment.isCode ? (
+                      <span className="py-8">
+                        <CopyBlock
+                          language={segment.language}
+                          key={segmentIndex}
+                          text={segment.text}
+                          theme={irBlack}
+                        />
+                      </span>
+                    ) : (
+                      <ReactMarkdown key={segmentIndex}>
+                        {segment.text}
+                      </ReactMarkdown>
+                    )
                 )}
               </div>
             )
@@ -177,4 +177,4 @@ function OllamaOutput() {
   );
 }
 
-export default OllamaOutput;
+export default OutputRenderer;

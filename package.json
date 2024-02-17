@@ -7,7 +7,7 @@
   "scripts": {
     "start": "set NODE_ENV=development&&electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make",
+    "make": "electron-forge make --universal",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx ."
   },
@@ -51,6 +51,7 @@
   },
   "dependencies": {
     "electron-reload": "^2.0.0-alpha.1",
+    "electron-reloader": "^1.2.3",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.1.0",
     "highlight.js": "^11.9.0",

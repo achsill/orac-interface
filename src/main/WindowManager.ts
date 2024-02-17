@@ -2,7 +2,7 @@ import { BrowserWindow, screen } from "electron";
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const OUTPUT_WINDOW_WEBPACK_ENTRY: string;
-declare const INSTALLER_WINDOW_WEBPACK_ENTRY: string;
+declare const SETTINGS_WINDOW_WEBPACK_ENTRY: string;
 
 class WindowManager {
   searchWindow: BrowserWindow | null = null;
@@ -11,14 +11,14 @@ class WindowManager {
 
   private createWindow(
     options: Electron.BrowserWindowConstructorOptions,
-    url: string
+    url: string,
+    windowProperty: keyof WindowManager
   ) {
     let window = new BrowserWindow(options);
     window.loadURL(url);
     window.on("closed", () => {
-      window = null;
+      this[windowProperty] = null;
     });
-
     return window;
   }
 
@@ -36,7 +36,8 @@ class WindowManager {
           nodeIntegration: false,
         },
       },
-      MAIN_WINDOW_WEBPACK_ENTRY
+      MAIN_WINDOW_WEBPACK_ENTRY,
+      "searchWindow"
     );
   }
 
@@ -59,15 +60,11 @@ class WindowManager {
           nodeIntegration: false,
         },
       },
-      OUTPUT_WINDOW_WEBPACK_ENTRY
+      OUTPUT_WINDOW_WEBPACK_ENTRY,
+      "outputWindow"
     );
     this.outputWindow.setVisibleOnAllWorkspaces(true, {
       visibleOnFullScreen: true,
-    });
-    this.outputWindow.webContents.openDevTools();
-    this.outputWindow.on("close", (e) => {
-      console.log("ca close...");
-      this.outputWindow = null;
     });
   }
 
@@ -85,9 +82,9 @@ class WindowManager {
           nodeIntegration: false,
         },
       },
-      INSTALLER_WINDOW_WEBPACK_ENTRY
+      SETTINGS_WINDOW_WEBPACK_ENTRY,
+      "settingsWindow"
     );
-    this.settingsWindow.webContents.openDevTools();
   }
 
   closeSearchWindow() {

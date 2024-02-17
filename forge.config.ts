@@ -12,11 +12,27 @@ import { rendererConfig } from "./webpack.renderer.config";
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    icon: "./src/assets/icon", // no file extension required
   },
   rebuildConfig: {},
   makers: [
     new MakerSquirrel({}),
-    new MakerZIP({}, ["darwin"]),
+    // new MakerZIP({}, ["darwin", "linux"]),
+    // {
+    //   name: "@electron-forge/maker-dmg",
+    //   config: {},
+    // },
+    {
+      name: "@electron-forge/maker-zip",
+      config: {},
+      platforms: ["linux", "darwin"],
+    },
+    {
+      name: "@electron-forge/maker-deb",
+      config: {
+        options: {},
+      },
+    },
     new MakerRpm({}),
     new MakerDeb({}),
   ],
@@ -28,25 +44,25 @@ const config: ForgeConfig = {
         config: rendererConfig,
         entryPoints: [
           {
-            html: "./src/index.html",
-            js: "./src/index_searchbar.jsx",
+            html: "./src/SearchWindow.html",
+            js: "./src/SearchWindow.tsx",
             name: "main_window",
             preload: {
               js: "./src/preload.ts",
             },
           },
           {
-            html: "./src/output_window.html",
-            js: "./src/index_output.jsx",
+            html: "./src/OutputWindow.html",
+            js: "./src/OutputWindow.tsx",
             name: "output_window",
             preload: {
               js: "./src/preload.ts",
             },
           },
           {
-            html: "./src/installer_window.html",
-            js: "./src/index_installer.jsx",
-            name: "installer_window",
+            html: "./src/SettingsWindow.html",
+            js: "./src/SettingsWindow.tsx",
+            name: "settings_window",
             preload: {
               js: "./src/preload.ts",
             },

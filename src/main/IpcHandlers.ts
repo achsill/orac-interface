@@ -18,10 +18,13 @@ const handleUserInput = async (input: string) => {
   if (windowManager?.searchWindow) {
     windowManager.closeSearchWindow();
   }
-  setTimeout(() => sendMessageToOutputWindow("ollama-input", input), 200);
+  setTimeout(() => sendMessageToOutputWindow("ia-input", input), 200);
 
   try {
-    const message = { role: "user", content: input };
+    const message = {
+      role: "user",
+      content: input,
+    };
     const response = await ollama.chat({
       model: store.get("modelName"),
       messages: [message],
@@ -30,11 +33,10 @@ const handleUserInput = async (input: string) => {
     });
 
     for await (const part of response) {
-      console.log(part.message.content);
-      sendMessageToOutputWindow("ollama-output", part.message.content);
+      sendMessageToOutputWindow("ia-output", part.message.content);
     }
 
-    sendMessageToOutputWindow("ollama-output-end", null);
+    sendMessageToOutputWindow("ia-output-end", null);
   } catch (e) {
     handleError(e);
   }
@@ -55,12 +57,11 @@ const handleError = (e: any) => {
       "The model you're trying to use has not been found, make sure to run ollama pull [model_name] first.";
   }
 
-  sendMessageToOutputWindow("ollama-error", errorMessage);
+  sendMessageToOutputWindow("ia-error", errorMessage);
 };
 
 export function setupIpcHandlers() {
   ipcMain.on("user-input", async (event, input: string) => {
-    console.log("?"); // This seems to be a placeholder log; consider removing or clarifying its purpose.
     await handleUserInput(input);
   });
 
@@ -68,7 +69,6 @@ export function setupIpcHandlers() {
     windowManager.createSettingsWindow();
     windowManager.settingsWindow.webContents.once("dom-ready", () => {
       const modelName = store.get("modelName");
-      console.log(modelName);
       if (modelName)
         windowManager.settingsWindow?.webContents.send(
           "init-model-name",
@@ -91,7 +91,6 @@ export function setupIpcHandlers() {
   });
 
   ipcMain.on("close-output-window", async () => {
-    console.log("close output window");
     windowManager.closeOutputWindow();
   });
 
