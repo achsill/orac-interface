@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
-import gridIconAnimated from "../assets/grid.svg"; // Adjust the path as necessary
 import gridIconFixed from "../assets/grid.png"; // Adjust the path as necessary
 import { CopyBlock, irBlack } from "react-code-blocks";
 import UserInput from "./UserInput";
@@ -25,11 +24,9 @@ function OutputRenderer() {
 
     let lastIndex = 0;
     text.replace(regex, (match: string, ...args: any[]): string => {
-      // Push preceding non-code text if it exists
       if (args[1] > lastIndex) {
         segments.push({ text: text.slice(lastIndex, args[1]), isCode: false });
       }
-      // Detect language and push code block
       const detectedLanguage = hljs.highlightAuto(args[0]).language;
       segments.push({
         text: args[0],
@@ -40,7 +37,6 @@ function OutputRenderer() {
       return "hehe";
     });
 
-    // Push remaining non-code text if it exists
     if (lastIndex < text.length) {
       segments.push({ text: text.slice(lastIndex), isCode: false });
     }
@@ -53,15 +49,7 @@ function OutputRenderer() {
   };
 
   const closeWindow = () => {
-    // Start a new message block upon receiving an "end" signal
     window.api.send("close-output-window", inputValue);
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Prevent the default form submission behavior
-    window.api.send("user-input", inputValue);
-    setIcon(gridIconAnimated);
-    setInputValue(""); // Clear the input after sending
   };
 
   useEffect(() => {
@@ -125,19 +113,26 @@ function OutputRenderer() {
 
   return (
     <div id="ollamaOutput" className="flex flex-col h-screen">
-      <div className="flex w-full">
-        <div id="head" className="w-3/4 h-8"></div>
+      <div className="flex w-full h-8 fixed p-4">
+        <button
+          onClick={closeWindow}
+          id="buttonSettings"
+          className="text-xs underline cursor-pointer hover:text-neutral-500"
+        >
+          Close
+        </button>
+        <div id="head" className="h-6 w-full"></div>
         <button
           onClick={openSettingsWindow}
           id="buttonSettings"
-          className="text-xs underline fixed right-4 top-4 cursor-pointer hover:text-neutral-500"
+          className="text-xs underline cursor-pointer hover:text-neutral-500"
         >
           Settings
         </button>
       </div>
       <div
         ref={scrollableContentRef}
-        className="flex-1 overflow-y-auto space-y-4 p-6"
+        className="flex-1 overflow-y-auto space-y-4 px-4 py-8 mt-4"
       >
         {messages.map(
           (message, index) =>

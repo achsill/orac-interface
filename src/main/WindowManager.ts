@@ -49,9 +49,9 @@ class WindowManager {
         height: 420,
         x: width - 432,
         y: 0,
+        frame: false,
         alwaysOnTop: true,
         transparent: true,
-        titleBarStyle: "hidden",
         resizable: true,
         movable: true,
         webPreferences: {
@@ -66,6 +66,7 @@ class WindowManager {
     this.outputWindow.setVisibleOnAllWorkspaces(true, {
       visibleOnFullScreen: true,
     });
+    this.outputWindow.webContents.openDevTools();
   }
 
   createSettingsWindow() {
@@ -75,6 +76,7 @@ class WindowManager {
         height: 420,
         titleBarStyle: "hidden",
         movable: true,
+        frame: false,
         resizable: false,
         webPreferences: {
           preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
