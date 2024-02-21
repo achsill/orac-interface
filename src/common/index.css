@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Reset some default styles */
 html,
 body {
   margin: 0;
@@ -18,16 +17,6 @@ body {
   align-items: center;
 }
 
-#userInput {
-  height: 100vh; /* Make the input take the full height of the viewport */
-  width: 100vw; /* Make the input take the full width of the viewport */
-  padding: 0; /* Remove padding */
-  border: none; /* Remove border */
-  font-size: 1.5rem; /* Adjust font size as needed */
-  color: red; /* Adjust text color as needed */
-}
-
-/* Remove the input field's outline on focus for a cleaner look */
 #userInput:focus {
   outline: none;
 }
@@ -65,7 +54,6 @@ input {
   -webkit-app-region: no-drag;
 }
 
-/* Remove the input field's outline on focus for a cleaner look */
 #userInput:focus {
   outline: none;
 }

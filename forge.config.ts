@@ -17,24 +17,21 @@ const config: ForgeConfig = {
   rebuildConfig: {},
   makers: [
     new MakerSquirrel({}),
-    // new MakerZIP({}, ["darwin", "linux"]),
-    // {
-    //   name: "@electron-forge/maker-dmg",
-    //   config: {},
-    // },
-    {
-      name: "@electron-forge/maker-zip",
-      config: {},
-      platforms: ["linux", "darwin"],
-    },
-    {
-      name: "@electron-forge/maker-deb",
-      config: {
-        options: {},
-      },
-    },
+    new MakerZIP({}, ["darwin", "linux"]),
     new MakerRpm({}),
     new MakerDeb({}),
+  ],
+  publishers: [
+    {
+      name: "@electron-forge/publisher-github",
+      config: {
+        repository: {
+          owner: "hlouar",
+          name: "orac-interface",
+        },
+        prerelease: true,
+      },
+    },
   ],
   plugins: [
     new AutoUnpackNativesPlugin({}),

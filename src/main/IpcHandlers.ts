@@ -58,7 +58,6 @@ const handleError = (e: any) => {
       errorMessage =
         "Ollama seems to not be running, make sure that you installed Ollama correctly, and that Ollama is running (ollama run serve in terminal).";
     }
-    // Add more specific error messages as needed
   } else if (/model '.*' not found, try pulling it first/.test(e.message)) {
     errorMessage =
       "The model you're trying to use has not been found, make sure to run ollama pull [model_name] first.";

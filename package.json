@@ -1,8 +1,8 @@
 {
-  "name": "alexandrie",
-  "productName": "alexandrie",
+  "name": "Orac Interface",
+  "productName": "Orac Interface",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "LLM interface",
   "main": ".webpack/main",
   "scripts": {
     "start": "set NODE_ENV=development&&electron-forge start",
@@ -12,7 +12,7 @@
     "lint": "eslint --ext .ts,.tsx ."
   },
   "keywords": [],
-  "author": "hamzalouar",
+  "author": "achsill",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.23.9",

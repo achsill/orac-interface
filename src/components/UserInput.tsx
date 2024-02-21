@@ -4,7 +4,7 @@ import React, {
   useEffect,
   TextareaHTMLAttributes,
 } from "react";
-import grid from "../assets/grid.svg"; // Adjust the path as necessary
+import grid from "../assets/grid.svg";
 
 interface InputParams {
   isOriginExtanded?: boolean;
@@ -12,12 +12,11 @@ interface InputParams {
 
 function UserInput({ isOriginExtanded }: InputParams) {
   const [inputValue, setInputValue] = useState("");
-  const inputRef = useRef(null); // Create a ref for the input element
-  const formRef = useRef(null); // Create a ref for the form element
+  const inputRef = useRef(null);
+  const formRef = useRef(null);
   const [isinputExpanded, setIsInputExpanded] = useState(isOriginExtanded);
 
   useEffect(() => {
-    // Automatically focus the input element when the component mounts
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -28,19 +27,17 @@ function UserInput({ isOriginExtanded }: InputParams) {
       }
       if (event.shiftKey && event.key === "Enter") {
         setIsInputExpanded(true);
-        event.preventDefault(); // Prevent the default action (Enter = submit in form)
-        window.api.send("extend-input-window"); // Call your function
+        event.preventDefault();
+        window.api.send("extend-input-window");
       }
     };
 
-    // Add event listener for the Escape key
     const handleClickOutside = (event: any) => {
       if (formRef.current && !formRef.current.contains(event.target)) {
         window.api.send("minimize-search-window", inputValue);
       }
     };
 
-    // Add event listener for clicks outside the form
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleKeyDown);
     return () => {
@@ -59,31 +56,28 @@ function UserInput({ isOriginExtanded }: InputParams) {
   };
 
   const handlePaste = (event: React.ClipboardEvent) => {
-    // Get pasted text  || window.clipboardData to add below
     const paste = event.clipboardData.getData("text");
     setInputValue(paste);
-    // Check if the pasted text contains newline characters
     if (paste.includes("\n")) {
       setIsInputExpanded(true);
-      window.api.send("extend-input-window"); // Call your function    }
+      window.api.send("extend-input-window");
     }
   };
 
   const handleTextAreaKeyDown = (event: any) => {
     if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault(); // Prevent the default Enter action (new line)
-      handleSubmit(event); // Call the submit form function
+      event.preventDefault();
+      handleSubmit(event);
     } else if (event.key === "Enter" && event.shiftKey) {
       setInputValue(inputValue + "\n");
     }
-    // Shift + Enter is allowed by default, so no need for additional handling
   };
 
   const handleSubmit = (e: any) => {
-    e.preventDefault(); // Prevent the default form submission behavior
+    e.preventDefault();
     if (inputValue.trim() !== "") {
       window.api.send("user-input", inputValue);
-      setInputValue(""); // Clear the input after sending
+      setInputValue("");
     }
   };
 
@@ -96,7 +90,7 @@ function UserInput({ isOriginExtanded }: InputParams) {
       {isinputExpanded ? (
         <div className="flex h-full w-full items-start">
           <div className="h-full flex align-start px-4">
-            <img src={grid} className="mt-[0.42rem] h-3" alt="Logo" />{" "}
+            <img src={grid} className="mt-[0.42rem] h-3" alt="Logo" />
           </div>
           <textarea
             value={inputValue}
@@ -111,14 +105,14 @@ function UserInput({ isOriginExtanded }: InputParams) {
         </div>
       ) : (
         <div className="flex justify-start items-center w-full h-full gap-4 mx-4">
-          <img src={grid} className=" h-3 " alt="Logo" />{" "}
+          <img src={grid} className=" h-3 " alt="Logo" />
           <input
             ref={inputRef}
             className="text-white focus:outline-none font-bold flex-1 bg-transparent"
             type="text"
             value={inputValue}
             onChange={handleChange}
-            onPaste={handlePaste} // Add this line
+            onPaste={handlePaste}
             placeholder="How can I help you?"
           />
           <button type="submit" className="hidden">

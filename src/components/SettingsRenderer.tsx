@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from "react";
 import logo from "../assets/logo.png"; // Adjust the path as necessary
 
-// Define interfaces for your state to improve type safety
 interface DownloadInformation {
   progress: number;
   remainingTime: string;
 }
 
-// Assuming window.api's type definitions are declared globally
-// If not, consider declaring them similar to the example below
 declare global {
   interface Window {
     api: {
@@ -54,7 +51,6 @@ const SettingsWindow: React.FC = () => {
   };
 
   useEffect(() => {
-    // Dummy implementations for demo. Replace with actual logic.
     const checkOllamaInstallation = (data: boolean) => {
       setIsOllamaInstalled(data);
     };

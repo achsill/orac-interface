@@ -39,6 +39,9 @@ class WindowManager {
       MAIN_WINDOW_WEBPACK_ENTRY,
       "searchWindow"
     );
+    this.searchWindow.setVisibleOnAllWorkspaces(true, {
+      visibleOnFullScreen: true,
+    });
   }
 
   createOutputWindow() {
@@ -75,7 +78,6 @@ class WindowManager {
         height: 420,
         titleBarStyle: "hidden",
         movable: true,
-        frame: false,
         resizable: false,
         webPreferences: {
           preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
@@ -91,7 +93,7 @@ class WindowManager {
   closeSearchWindow() {
     if (this.searchWindow) {
       this.searchWindow.close();
-      this.searchWindow = null; // Explicitly set to null
+      this.searchWindow = null;
     }
   }
 
@@ -104,14 +106,14 @@ class WindowManager {
   closeOutputWindow() {
     if (this.outputWindow) {
       this.outputWindow.close();
-      this.outputWindow = null; // Explicitly set to null
+      this.outputWindow = null;
     }
   }
 
   closeSettingsWindow() {
     if (this.settingsWindow) {
       this.settingsWindow.close();
-      this.settingsWindow = null; // Explicitly set to null
+      this.settingsWindow = null;
     }
   }
 }
