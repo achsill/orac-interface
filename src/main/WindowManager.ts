@@ -29,6 +29,7 @@ class WindowManager {
         height: 60,
         transparent: true,
         frame: false,
+        type: "panel",
         resizable: true,
         webPreferences: {
           preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
@@ -39,9 +40,6 @@ class WindowManager {
       MAIN_WINDOW_WEBPACK_ENTRY,
       "searchWindow"
     );
-    this.searchWindow.setVisibleOnAllWorkspaces(true, {
-      visibleOnFullScreen: true,
-    });
   }
 
   createOutputWindow() {
@@ -52,6 +50,7 @@ class WindowManager {
         height: 420,
         x: width - 432,
         y: 0,
+        type: "panel",
         frame: false,
         alwaysOnTop: true,
         transparent: true,
@@ -66,14 +65,12 @@ class WindowManager {
       OUTPUT_WINDOW_WEBPACK_ENTRY,
       "outputWindow"
     );
-    this.outputWindow.setVisibleOnAllWorkspaces(true, {
-      visibleOnFullScreen: true,
-    });
   }
 
   createSettingsWindow() {
     this.settingsWindow = this.createWindow(
       {
+        parent: this.outputWindow,
         width: 420,
         height: 420,
         titleBarStyle: "hidden",

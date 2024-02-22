@@ -11,13 +11,7 @@ const sendMessageToOutputWindow = (
   windowManager.outputWindow?.webContents.send(messageType, messageContent);
 };
 
-const handleUserInput = async (input: string) => {
-  if (!windowManager.outputWindow) {
-    windowManager.createOutputWindow();
-  }
-  if (windowManager?.searchWindow) {
-    windowManager.minimizeSearchWindow();
-  }
+const sendMessages = async (input: string) => {
   const modelName = store.get("modelName");
   sendMessageToOutputWindow("ia-input", input);
   if (modelName) {
@@ -44,8 +38,21 @@ const handleUserInput = async (input: string) => {
   } else {
     sendMessageToOutputWindow(
       "ia-error",
-      "Go to the settings to configure the model you want to target."
+      "Go to the settings to configure the model you want to use with the interface. Make sure you install it with Ollama before."
     );
+  }
+};
+const handleUserInput = async (input: string) => {
+  if (windowManager?.searchWindow) {
+    windowManager.minimizeSearchWindow();
+  }
+  if (!windowManager.outputWindow) {
+    windowManager.createOutputWindow();
+    windowManager.outputWindow.webContents.once("dom-ready", () => {
+      sendMessages(input);
+    });
+  } else {
+    sendMessages(input);
   }
 };
 

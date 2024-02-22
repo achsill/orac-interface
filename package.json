@@ -50,6 +50,7 @@
     "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
+    "@electron-forge/maker-dmg": "^7.3.0",
     "electron-reload": "^2.0.0-alpha.1",
     "electron-reloader": "^1.2.3",
     "electron-squirrel-startup": "^1.0.0",

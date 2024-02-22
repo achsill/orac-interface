@@ -3,6 +3,7 @@ import { MakerSquirrel } from "@electron-forge/maker-squirrel";
 import { MakerZIP } from "@electron-forge/maker-zip";
 import { MakerDeb } from "@electron-forge/maker-deb";
 import { MakerRpm } from "@electron-forge/maker-rpm";
+import { MakerDMG } from "@electron-forge/maker-dmg";
 import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
 import { WebpackPlugin } from "@electron-forge/plugin-webpack";
 
@@ -13,13 +14,20 @@ const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
     icon: "./src/assets/icon",
+    osxSign: {},
+    osxNotarize: {
+      appleId: process.env.APP_ID ?? "",
+      appleIdPassword: process.env.APP_PWD ?? "",
+      teamId: process.env.APP_TEAM_ID ?? "",
+    },
   },
   rebuildConfig: {},
   makers: [
-    new MakerSquirrel({}),
-    new MakerZIP({}, ["darwin", "linux"]),
-    new MakerRpm({}),
-    new MakerDeb({}),
+    // new MakerSquirrel({}),
+    // new MakerZIP({}, ["darwin", "linux"]),
+    // new MakerRpm({}),
+    // new MakerDeb({}),
+    new MakerDMG({}),
   ],
   publishers: [
     {

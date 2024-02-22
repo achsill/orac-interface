@@ -23,6 +23,7 @@ function setupAppLifecycle() {
     windowManager.createSearchWindow();
     setupIpcHandlers();
     registerGlobalShortcuts();
+    // app.dock.show();
   });
 
   app.on("will-quit", () => {
