@@ -2,8 +2,8 @@
 
 ## About The Project
 ![Orac Interface](https://i.ibb.co/GRYs9sL/orac-demo-pic.png)
-An app to chat with your LLM seamlessly
-Don't interrupt your workflow anymore, with orac, you just have to press Ctrl+Space to chat with your LLM from anywhere on your desktop, anytime.
+Easily chat with your local LLM. The Orac Interface is seamlessly integrated into your workflow; just press Ctrl+Space to start a conversation with your AI. Asking questions to your AI won't interrupt your workflow anymore.
+
 
 ## How To Use
 
@@ -12,7 +12,7 @@ Orac-Interface is currently compatible with macOS and utilizes Ollama for its op
 1. **Download Ollama:** Visit [https://ollama.com/](https://ollama.com/) to download the Ollama software.
 2. **Install a Local LLM:** Use the command `pull model_name` in your terminal to install the local LLM you wish to use.
 3. **Verify Ollama is Running:** Ensure that the Ollama application is running correctly. You should see the Ollama logo displayed in your top bar.
-4. **Download Orac-Interface:** [Download the .dmg](https://github.com/hlouar/orac-interface/releases/download/v0.0.1-alpha/Orac_Interface.dmg)
+4. **Download Orac-Interface:** [Download the .dmg](https://dub.sh/OlyKTY8)
 5. **Launch Orac-Interface:** After installation, launch the software and simply press `Ctrl+Space` to open Orac-Interface from anywhere on your system.
 
 
@@ -34,5 +34,9 @@ Orac-Interface is currently compatible with macOS and utilizes Ollama for its op
 - [ ] Feature to save LLM responses, enabling easy retrieval for future reference.
 - [ ] Allow shortcut modification
 
-Contributions, feedback, and suggestions are more than welcomed.
+## Links
+[Website](orac-interface.vercel.app)\
+[Discord](https://dub.sh/WkWCKNd)
 
+Contributions, feedback, and suggestions are more than welcomed.\
+You can also reach out to me on [twitter](https://x.com/achsill) if you have any question.
