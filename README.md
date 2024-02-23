@@ -2,7 +2,7 @@
 
 ## About The Project
 
-Orac-Interface is a software solution designed to streamline the interaction with your local Large Language Model (LLM), ensuring that accessing your LLM is as seamless and integrated into your workflow as possible. Whether you're designing, developing, or writing, Orac-Interface brings the power of LLMs right to your fingertips.
+Orac-Interface is a software solution designed to streamline the interaction with your LLM, ensuring that accessing it is as seamless and integrated into your workflow as possible. Whether you're designing, developing, or writing, Orac-Interface brings the power of LLMs right to your fingertips.
 
 Our mission is twofold:
 1. **Enhance Accessibility:** We believe in the power of simplicity. Our goal is to provide a straightforward and seamless interface that democratizes the use of local LLMs. While many local LLMs boast impressive performance, the key to widespread adoption lies in making them effortlessly accessible to everyone.
