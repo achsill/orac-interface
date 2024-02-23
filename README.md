@@ -4,7 +4,7 @@
 ![Orac Interface](https://i.ibb.co/GRYs9sL/orac-demo-pic.png)
 Easily chat with your local LLM. The Orac Interface is seamlessly integrated into your workflow; just press Ctrl+Space to start a conversation with your AI. Asking questions to your AI won't interrupt your workflow anymore.
 
-
+a demo is available on the [website](https://dub.sh/8srNEsu).
 ## How To Use
 
 Orac-Interface is currently compatible with macOS and utilizes Ollama for its operation. Follow the steps below to get started:
