@@ -12,7 +12,7 @@ Orac-Interface is currently compatible with macOS and utilizes Ollama for its op
 1. **Download Ollama:** Visit [https://ollama.com/](https://ollama.com/) to download the Ollama software.
 2. **Install a Local LLM:** Use the command `pull model_name` in your terminal to install the local LLM you wish to use.
 3. **Verify Ollama is Running:** Ensure that the Ollama application is running correctly. You should see the Ollama logo displayed in your top bar.
-4. **Download Orac-Interface:** [Download the .dmg](https://github.com/hlouar/orac-interface/releases/download/v0.0.1-alpha/Orac_Interface.dmg)  to download the Orac-Interface software.
+4. **Download Orac-Interface:** [Download the .dmg](https://github.com/hlouar/orac-interface/releases/download/v0.0.1-alpha/Orac_Interface.dmg).
 5. **Launch Orac-Interface:** After installation, launch the software and simply press `Ctrl+Space` to open Orac-Interface from anywhere on your system.
 
 
