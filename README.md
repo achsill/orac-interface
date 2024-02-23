@@ -22,7 +22,7 @@ Orac-Interface is currently compatible with macOS and utilizes Ollama for its op
 3. **Shift+Enter**: New line
 
 ## Testing And Building The Project
-- **Test**: npm run dev
+- **Test**: npm run start
 - **Build**: npm run make
 
 ## What's Next
