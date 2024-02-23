@@ -2,7 +2,8 @@
 
 ## About The Project
 ![Orac Interface](https://i.ibb.co/GRYs9sL/orac-demo-pic.png)
-Orac-Interface is a software solution designed to streamline the interaction with your LLM, ensuring that accessing it is as seamless and integrated into your workflow as possible. Whether you're designing, developing, or writing, Orac-Interface brings the power of LLMs right to your fingertips.
+An app to chat with your LLM seamlessly
+Don't interrupt your workflow anymore, with orac, you just have to press Ctrl+Space to chat with your LLM from anywhere on your desktop, anytime.
 
 ## How To Use
 
@@ -34,3 +35,4 @@ Orac-Interface is currently compatible with macOS and utilizes Ollama for its op
 - [ ] Allow shortcut modification
 
 Contributions, feedback, and suggestions are more than welcomed.
+
