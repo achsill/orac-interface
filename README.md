@@ -1,4 +1,4 @@
-# Orac-Interface
+# Orac Interface
 
 ## About The Project
 ![Orac Interface](https://i.ibb.co/GRYs9sL/orac-demo-pic.png)
