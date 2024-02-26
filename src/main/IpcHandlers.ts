@@ -42,6 +42,7 @@ const sendMessages = async (input: string) => {
     );
   }
 };
+
 const handleUserInput = async (input: string) => {
   if (windowManager?.searchWindow) {
     windowManager.minimizeSearchWindow();
@@ -53,6 +54,31 @@ const handleUserInput = async (input: string) => {
     });
   } else {
     sendMessages(input);
+  }
+};
+
+export const sendClipboardContent = async (clipboardContent: string) => {
+  if (windowManager.outputWindow) {
+    windowManager.outputWindow?.webContents.send(
+      "send-clipboard-content",
+      clipboardContent
+    );
+  } else {
+    if (!windowManager.searchWindow) {
+      windowManager.searchWindow.webContents.once("dom-ready", () => {
+        windowManager.searchWindow?.webContents.send(
+          "send-clipboard-content",
+          clipboardContent
+        );
+      });
+    } else {
+      windowManager.searchWindow.on("show", () => {
+        windowManager.searchWindow?.webContents.send(
+          "send-clipboard-content",
+          clipboardContent
+        );
+      });
+    }
   }
 };
 

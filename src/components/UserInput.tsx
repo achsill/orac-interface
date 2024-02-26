@@ -16,6 +16,11 @@ function UserInput({ isOriginExtanded }: InputParams) {
   const formRef = useRef(null);
   const [isinputExpanded, setIsInputExpanded] = useState(isOriginExtanded);
 
+  const expandWindow = () => {
+    setIsInputExpanded(true);
+    window.api.send("extend-input-window");
+  };
+
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
@@ -26,9 +31,8 @@ function UserInput({ isOriginExtanded }: InputParams) {
         window.api.send("minimize-search-window", inputValue);
       }
       if (event.shiftKey && event.key === "Enter") {
-        setIsInputExpanded(true);
         event.preventDefault();
-        window.api.send("extend-input-window");
+        expandWindow();
       }
     };
 
@@ -38,10 +42,17 @@ function UserInput({ isOriginExtanded }: InputParams) {
       }
     };
 
+    const handleClipboardPaste = (data: string) => {
+      setInputValue(data + "\n");
+      expandWindow();
+    };
+
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleKeyDown);
+    window.api.receive("send-clipboard-content", handleClipboardPaste);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
+      window.api.removeListener("send-clipboard-content", handleClipboardPaste);
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
@@ -59,8 +70,7 @@ function UserInput({ isOriginExtanded }: InputParams) {
     const paste = event.clipboardData.getData("text");
     setInputValue(paste);
     if (paste.includes("\n")) {
-      setIsInputExpanded(true);
-      window.api.send("extend-input-window");
+      expandWindow();
     }
   };
 

@@ -1,9 +1,9 @@
-import { app, BrowserWindow, globalShortcut } from "electron";
+import { app, BrowserWindow, globalShortcut, clipboard } from "electron";
 import { windowManager } from "./main/WindowManager";
-import { setupIpcHandlers } from "./main/IpcHandlers";
+import { setupIpcHandlers, sendClipboardContent } from "./main/IpcHandlers";
 
 function registerGlobalShortcuts() {
-  const ret = globalShortcut.register("Ctrl+Space", () => {
+  globalShortcut.register("Ctrl+Space", () => {
     if (!windowManager.searchWindow) {
       windowManager.createSearchWindow();
     } else {
@@ -11,11 +11,16 @@ function registerGlobalShortcuts() {
     }
   });
 
-  if (!ret) {
-    console.error("Global shortcut registration failed");
-  } else {
-    console.log("Global shortcut registered successfully");
-  }
+  globalShortcut.register("Ctrl+Option+Space", () => {
+    const clipboardContent = clipboard.readText("selection");
+    if (!windowManager.searchWindow) {
+      windowManager.createSearchWindow();
+      sendClipboardContent(clipboardContent);
+    } else {
+      windowManager.searchWindow.show();
+      sendClipboardContent(clipboardContent);
+    }
+  });
 }
 
 function setupAppLifecycle() {

@@ -26,6 +26,7 @@ contextBridge.exposeInMainWorld("api", {
       "check-ia",
       "ia-error",
       "init-model-name",
+      "send-clipboard-content",
     ];
     if (validChannels.includes(channel)) {
       ipcRenderer.on(channel, (event, ...args) => func(...args));
