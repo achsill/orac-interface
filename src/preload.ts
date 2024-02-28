@@ -12,6 +12,10 @@ contextBridge.exposeInMainWorld("api", {
       "update-model",
       "close-setting-window",
       "minimize-search-window",
+      "download-model",
+      "switch-model-type",
+      "select-model",
+      "stop-download",
     ];
     if (validChannels.includes(channel)) {
       ipcRenderer.send(channel, data);
@@ -27,6 +31,8 @@ contextBridge.exposeInMainWorld("api", {
       "ia-error",
       "init-model-name",
       "send-clipboard-content",
+      "download-data",
+      "download-completed",
     ];
     if (validChannels.includes(channel)) {
       ipcRenderer.on(channel, (event, ...args) => func(...args));

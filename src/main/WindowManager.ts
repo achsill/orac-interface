@@ -1,4 +1,5 @@
 import { BrowserWindow, screen } from "electron";
+import Downloader from "./Downloader";
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const OUTPUT_WINDOW_WEBPACK_ENTRY: string;
@@ -17,6 +18,9 @@ class WindowManager {
     let window = new BrowserWindow(options);
     window.loadURL(url);
     window.on("closed", () => {
+      if (this[windowProperty] === this.settingsWindow) {
+        Downloader.getInstance(this).stopDownload();
+      }
       this[windowProperty] = null;
     });
     return window;
@@ -70,9 +74,9 @@ class WindowManager {
   createSettingsWindow() {
     this.settingsWindow = this.createWindow(
       {
-        parent: this.outputWindow,
-        width: 420,
-        height: 420,
+        // parent: this.outputWindow,
+        width: 620,
+        height: 520,
         titleBarStyle: "hidden",
         movable: true,
         resizable: false,
@@ -85,6 +89,7 @@ class WindowManager {
       SETTINGS_WINDOW_WEBPACK_ENTRY,
       "settingsWindow"
     );
+    this.settingsWindow.webContents.openDevTools();
   }
 
   closeSearchWindow() {

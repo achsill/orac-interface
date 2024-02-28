@@ -1,6 +1,13 @@
 import { ipcMain } from "electron";
 import { windowManager } from "./WindowManager";
 import ollama from "ollama";
+import { homedir } from "os";
+import { fileURLToPath } from "url";
+import nodeLlamaCpp, { Token } from "node-llama-cpp";
+import path from "path";
+import { calculateRecommandedModel, findDownloadedModels } from "./Models";
+import Downloader from "./Downloader";
+
 const Store = require("electron-store");
 const store = new Store();
 
@@ -11,9 +18,43 @@ const sendMessageToOutputWindow = (
   windowManager.outputWindow?.webContents.send(messageType, messageContent);
 };
 
-const sendMessages = async (input: string) => {
+const retrieveModelFilename = () => {
+  const modelName = store.get("selectedModel");
+  console.log(modelName);
+  if (modelName === "llama") return "llama-2-7b.Q8_0.gguf";
+  else if (modelName === "mistral") return "mistral-7b-v0.1.Q5_K_S.gguf";
+  else if (modelName === "mixtral") return "mixtral-7b-v0.1.Q5_K_S.gguf";
+};
+
+async function aiHandler(input: string) {
+  const { LlamaModel, LlamaContext, LlamaChatSession } =
+    (await nodeLlamaCpp) as any as typeof import("node-llama-cpp");
+
+  try {
+    const homeDirectory = homedir();
+    const model = new LlamaModel({
+      modelPath: path.join(
+        homeDirectory,
+        ".orac",
+        "models",
+        retrieveModelFilename()
+      ),
+    });
+    const context = new LlamaContext({ model });
+    const session = new LlamaChatSession({ context });
+    const a1 = await session.prompt(input, {
+      onToken(chunk: Token[]) {
+        sendMessageToOutputWindow("ia-output", context.decode(chunk));
+      },
+    });
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+const ollamaHandler = async (input: string) => {
   const modelName = store.get("modelName");
-  sendMessageToOutputWindow("ia-input", input);
+
   if (modelName) {
     try {
       const message = {
@@ -26,6 +67,8 @@ const sendMessages = async (input: string) => {
         stream: true,
         keep_alive: -1,
       });
+
+      ("~/.ollama/models");
 
       for await (const part of response) {
         sendMessageToOutputWindow("ia-output", part.message.content);
@@ -41,6 +84,15 @@ const sendMessages = async (input: string) => {
       "Go to the settings to configure the model you want to use with the interface. Make sure you install it with Ollama before."
     );
   }
+};
+
+const sendMessages = async (input: string) => {
+  sendMessageToOutputWindow("ia-input", input);
+  try {
+  } catch (e) {}
+
+  aiHandler(input);
+  // ollamaHandler(input);
 };
 
 const handleUserInput = async (input: string) => {
@@ -106,13 +158,20 @@ export function setupIpcHandlers() {
 
   ipcMain.on("settings-button-clicked", async (event, input: string) => {
     windowManager.createSettingsWindow();
-    windowManager.settingsWindow.webContents.once("dom-ready", () => {
+    windowManager.settingsWindow.webContents.once("dom-ready", async () => {
       const modelName = store.get("modelName");
+      const selectedModel = store.get("selectedModel");
+      const isUsingCustomModel = store.get("isUsingCustomModel");
+      const downloadedModels = await findDownloadedModels();
+      const recommandedModel = calculateRecommandedModel();
       if (modelName)
-        windowManager.settingsWindow?.webContents.send(
-          "init-model-name",
-          modelName
-        );
+        windowManager.settingsWindow?.webContents.send("init-model-name", {
+          isUsingCustomModel,
+          modelName,
+          downloadedModels,
+          selectedModel,
+          recommandedModel,
+        });
     });
     windowManager.settingsWindow.focus();
   });
@@ -140,6 +199,43 @@ export function setupIpcHandlers() {
   ipcMain.on("minimize-search-window", async () => {
     windowManager.minimizeSearchWindow();
   });
+
+  ipcMain.on("download-model", async (event: any, modelName: string) => {
+    let fileUrl;
+    let fileName;
+    if (modelName === "mistral") {
+      fileUrl =
+        "https://huggingface.co/TheBloke/Mistral-7B-v0.1-GGUF/resolve/main/mistral-7b-v0.1.Q5_K_S.gguf";
+      fileName = "mistral-7b-v0.1.Q5_K_S.gguf";
+    } else if (modelName === "mixtral") {
+      fileUrl =
+        "https://huggingface.co/TheBloke/Mixtral-8x7B-v0.1-GGUF/resolve/main/mixtral-8x7b-v0.1.Q3_K_M.gguf";
+      fileName = "mixtral-8x7b-v0.1.Q3_K_M.gguf";
+    } else if (modelName === "llama") {
+      fileUrl =
+        "https://huggingface.co/TheBloke/Llama-2-7B-GGUF/resolve/main/llama-2-7b.Q8_0.gguf";
+      fileName = "llama-2-7b.Q8_0.gguf";
+    }
+    const homeDirectory = homedir();
+    const downloader = Downloader.getInstance(windowManager);
+    downloader.downloadFile(
+      fileUrl,
+      path.join(homeDirectory, ".orac", "models", fileName),
+      modelName
+    );
+  });
+
+  ipcMain.on("select-model", async (event: any, modelName: string) => {
+    console.log("??" + modelName);
+    store.set("selectedModel", modelName);
+  });
+
+  ipcMain.on(
+    "switch-model-type",
+    async (event: any, isUsingCustomModel: boolean) => {
+      store.set("isUsingCustomModel", isUsingCustomModel);
+    }
+  );
 
   ipcMain.on("close-input-window", async () => {
     windowManager.closeSearchWindow();
