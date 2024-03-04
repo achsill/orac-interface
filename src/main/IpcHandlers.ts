@@ -1,99 +1,82 @@
-import { ipcMain } from "electron";
+import { ipcMain, dialog } from "electron";
 import { windowManager } from "./WindowManager";
-import ollama from "ollama";
 import { homedir } from "os";
-import { fileURLToPath } from "url";
-import nodeLlamaCpp, { Token } from "node-llama-cpp";
 import path from "path";
 import { calculateRecommandedModel, findDownloadedModels } from "./Models";
-import Downloader from "./Downloader";
+import nodeLlamaCpp, { LlamaChatSession, LlamaContext } from "node-llama-cpp";
 
 const Store = require("electron-store");
 const store = new Store();
 
+let session: LlamaChatSession | null = null;
+let context: LlamaContext | null = null;
+
 const sendMessageToOutputWindow = (
   messageType: string,
-  messageContent: any
+  messageContent: string
 ) => {
   windowManager.outputWindow?.webContents.send(messageType, messageContent);
 };
 
-const retrieveModelFilename = () => {
+const getModelPath = (): string | null => {
+  const homeDirectory = homedir();
+  const baseModelPath = path.join(homeDirectory, ".orac", "models");
+
+  if (store.get("isUsingCustomModel")) {
+    return store.get("customModelPath") || null;
+  }
+
+  const modelNameMap: { [key: string]: string } = {
+    capybarahermes: "capybarahermes-2.5-mistral-7b.Q6_K.gguf",
+    openchat: "openchat_3.5.Q6_K.gguf",
+  };
+
   const modelName = store.get("selectedModel");
-  console.log(modelName);
-  if (modelName === "llama") return "llama-2-7b.Q8_0.gguf";
-  else if (modelName === "mistral") return "mistral-7b-v0.1.Q5_K_S.gguf";
-  else if (modelName === "mixtral") return "mixtral-7b-v0.1.Q5_K_S.gguf";
+  return modelName ? path.join(baseModelPath, modelNameMap[modelName]) : null;
 };
 
-async function aiHandler(input: string) {
-  const { LlamaModel, LlamaContext, LlamaChatSession } =
-    (await nodeLlamaCpp) as any as typeof import("node-llama-cpp");
+export const aiInit = async () => {
+  const { LlamaModel, LlamaContext, LlamaChatSession } = await nodeLlamaCpp;
 
   try {
-    const homeDirectory = homedir();
-    const model = new LlamaModel({
-      modelPath: path.join(
-        homeDirectory,
-        ".orac",
-        "models",
-        retrieveModelFilename()
-      ),
-    });
-    const context = new LlamaContext({ model });
-    const session = new LlamaChatSession({ context });
-    const a1 = await session.prompt(input, {
-      onToken(chunk: Token[]) {
-        sendMessageToOutputWindow("ia-output", context.decode(chunk));
-      },
-    });
-  } catch (e) {
-    console.log(e);
-  }
-}
-
-const ollamaHandler = async (input: string) => {
-  const modelName = store.get("modelName");
-
-  if (modelName) {
-    try {
-      const message = {
-        role: "user",
-        content: input,
-      };
-      const response = await ollama.chat({
-        model: store.get("modelName"),
-        messages: [message],
-        stream: true,
-        keep_alive: -1,
-      });
-
-      ("~/.ollama/models");
-
-      for await (const part of response) {
-        sendMessageToOutputWindow("ia-output", part.message.content);
-      }
-
-      sendMessageToOutputWindow("ia-output-end", null);
-    } catch (e) {
-      handleError(e);
+    const modelFilePath = getModelPath();
+    if (!modelFilePath) {
+      sendMessageToOutputWindow(
+        "ia-output",
+        "Please, select a model first in the settings."
+      );
+      return;
     }
-  } else {
-    sendMessageToOutputWindow(
-      "ia-error",
-      "Go to the settings to configure the model you want to use with the interface. Make sure you install it with Ollama before."
-    );
+
+    const model = new LlamaModel({ modelPath: modelFilePath });
+    context = new LlamaContext({ model });
+    session = new LlamaChatSession({ context });
+  } catch (error) {
+    console.error(error);
   }
 };
 
 const sendMessages = async (input: string) => {
-  sendMessageToOutputWindow("ia-input", input);
-  try {
-  } catch (e) {}
+  if (!session) {
+    console.error("Session not initialized.");
+    return;
+  }
 
-  aiHandler(input);
-  // ollamaHandler(input);
+  try {
+    sendMessageToOutputWindow("ia-input", input);
+
+    await session.prompt(input, {
+      onToken: (chunk: any[]) => {
+        const decoded = context?.decode(chunk);
+        if (decoded) sendMessageToOutputWindow("ia-output", decoded);
+      },
+    });
+  } catch (error) {
+    console.error(error);
+  }
 };
+
+// Other functions remain mostly unchanged but should also be reviewed for similar improvements.
 
 const handleUserInput = async (input: string) => {
   if (windowManager?.searchWindow) {
@@ -134,23 +117,6 @@ export const sendClipboardContent = async (clipboardContent: string) => {
   }
 };
 
-const handleError = (e: any) => {
-  console.error(e); // Log the full error
-
-  let errorMessage = "An unexpected error occurred.";
-  if (e.cause && e.cause.errno) {
-    if (e.cause.errno === -61) {
-      errorMessage =
-        "Ollama seems to not be running, make sure that you installed Ollama correctly, and that Ollama is running (ollama run serve in terminal).";
-    }
-  } else if (/model '.*' not found, try pulling it first/.test(e.message)) {
-    errorMessage =
-      "The model you're trying to use has not been found, make sure to run ollama pull [model_name] first.";
-  }
-
-  sendMessageToOutputWindow("ia-error", errorMessage);
-};
-
 export function setupIpcHandlers() {
   ipcMain.on("user-input", async (event, input: string) => {
     await handleUserInput(input);
@@ -162,6 +128,7 @@ export function setupIpcHandlers() {
       const modelName = store.get("modelName");
       const selectedModel = store.get("selectedModel");
       const isUsingCustomModel = store.get("isUsingCustomModel");
+      const customModelPath = store.get("customModelPath");
       const downloadedModels = await findDownloadedModels();
       const recommandedModel = calculateRecommandedModel();
       if (modelName)
@@ -171,6 +138,7 @@ export function setupIpcHandlers() {
           downloadedModels,
           selectedModel,
           recommandedModel,
+          customModelPath,
         });
     });
     windowManager.settingsWindow.focus();
@@ -200,40 +168,16 @@ export function setupIpcHandlers() {
     windowManager.minimizeSearchWindow();
   });
 
-  ipcMain.on("download-model", async (event: any, modelName: string) => {
-    let fileUrl;
-    let fileName;
-    if (modelName === "mistral") {
-      fileUrl =
-        "https://huggingface.co/TheBloke/Mistral-7B-v0.1-GGUF/resolve/main/mistral-7b-v0.1.Q5_K_S.gguf";
-      fileName = "mistral-7b-v0.1.Q5_K_S.gguf";
-    } else if (modelName === "mixtral") {
-      fileUrl =
-        "https://huggingface.co/TheBloke/Mixtral-8x7B-v0.1-GGUF/resolve/main/mixtral-8x7b-v0.1.Q3_K_M.gguf";
-      fileName = "mixtral-8x7b-v0.1.Q3_K_M.gguf";
-    } else if (modelName === "llama") {
-      fileUrl =
-        "https://huggingface.co/TheBloke/Llama-2-7B-GGUF/resolve/main/llama-2-7b.Q8_0.gguf";
-      fileName = "llama-2-7b.Q8_0.gguf";
-    }
-    const homeDirectory = homedir();
-    const downloader = Downloader.getInstance(windowManager);
-    downloader.downloadFile(
-      fileUrl,
-      path.join(homeDirectory, ".orac", "models", fileName),
-      modelName
-    );
-  });
-
   ipcMain.on("select-model", async (event: any, modelName: string) => {
-    console.log("??" + modelName);
     store.set("selectedModel", modelName);
+    aiInit();
   });
 
   ipcMain.on(
     "switch-model-type",
     async (event: any, isUsingCustomModel: boolean) => {
       store.set("isUsingCustomModel", isUsingCustomModel);
+      aiInit();
     }
   );
 
@@ -241,3 +185,32 @@ export function setupIpcHandlers() {
     windowManager.closeSearchWindow();
   });
 }
+
+ipcMain.on("set-custom-model-path", async (event, modelPath: string) => {
+  try {
+    store.set("customModelPath", modelPath);
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+ipcMain.on("open-file-dialog", (event) => {
+  dialog
+    .showOpenDialog({
+      properties: ["openFile"],
+      filters: [{ name: "GGUF Files", extensions: ["gguf"] }],
+    })
+    .then((result) => {
+      if (!result.canceled && result.filePaths.length > 0) {
+        store.set("customModelPath", result.filePaths[0]);
+        aiInit();
+        windowManager.settingsWindow?.webContents.send(
+          "get-custom-model-path",
+          result.filePaths[0]
+        );
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});

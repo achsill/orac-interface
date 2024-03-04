@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld("api", {
       "switch-model-type",
       "select-model",
       "stop-download",
+      "open-file-dialog",
     ];
     if (validChannels.includes(channel)) {
       ipcRenderer.send(channel, data);
@@ -33,6 +34,8 @@ contextBridge.exposeInMainWorld("api", {
       "send-clipboard-content",
       "download-data",
       "download-completed",
+      "set-custom-model-path",
+      "get-custom-model-path",
     ];
     if (validChannels.includes(channel)) {
       ipcRenderer.on(channel, (event, ...args) => func(...args));

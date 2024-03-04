@@ -30,23 +30,23 @@ const ModelSettings: React.FC = () => {
   const [isUsingCustomModel, setIsUsingCustomModel] = useState(false);
   const [modelName, setModelName] = useState<string>("");
   const [models, setModels] = useState({
-    mistral: {
+    capybarahermes: {
       isDownloaded: false,
       isSelected: false,
       isRecommanded: false,
     },
-    llama: {
-      isDownloaded: false,
-      isSelected: false,
-      isRecommanded: false,
-    },
-    mixtral: {
+    openchat: {
       isDownloaded: false,
       isSelected: false,
       isRecommanded: false,
     },
   });
   const [isDownloading, setIsDownloading] = useState(false);
+  const [customModelPath, setCustomModelPath] = useState("");
+
+  const selectFile = () => {
+    window.api.send("open-file-dialog");
+  };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setModelName(event.target.value);
@@ -119,25 +119,21 @@ const ModelSettings: React.FC = () => {
     const initModelName = (data: any) => {
       console.log(data);
       const models = {
-        mistral: {
-          isDownloaded: data.downloadedModels.mistral,
-          isSelected: data.selectedModel === "mistral",
-          isRecommanded: data.recommandedModel === "mistral",
+        capybarahermes: {
+          isDownloaded: data.downloadedModels.capybarahermes,
+          isSelected: data.selectedModel === "capybarahermes",
+          isRecommanded: data.recommandedModel === "capybarahermes",
         },
-        llama: {
-          isDownloaded: data.downloadedModels.llama,
-          isSelected: data.selectedModel === "llama",
-          isRecommanded: data.recommandedModel === "llama",
-        },
-        mixtral: {
-          isDownloaded: data.downloadedModels.mixtral,
-          isSelected: data.selectedModel === "mixtral",
-          isRecommanded: data.recommandedModel === "mixtral",
+        openchat: {
+          isDownloaded: data.downloadedModels.openchat,
+          isSelected: data.selectedModel === "openchat",
+          isRecommanded: data.recommandedModel === "openchat",
         },
       };
       setModels(models);
-      setModelName(data);
+      setModelName(data.modelName);
       setIsUsingCustomModel(data.isUsingCustomModel);
+      setCustomModelPath(data.customModelPath);
     };
 
     function sToTime(s: number): string {
@@ -160,9 +156,15 @@ const ModelSettings: React.FC = () => {
       });
     };
 
+    const getCustomModelPath = (modelPath: string) => {
+      console.log(modelPath);
+      setCustomModelPath(modelPath);
+    };
+
     window.api.receive("init-model-name", initModelName);
     window.api.receive("download-data", updateProgress);
     window.api.receive("download-completed", completeDownload);
+    window.api.receive("get-custom-model-path", getCustomModelPath);
 
     return () => {
       window.api.removeListener("init-model-name", initModelName);
@@ -182,7 +184,9 @@ const ModelSettings: React.FC = () => {
             }
           >
             <div className="flex justify-between items-center  mb-2">
-              <h1 className="text-l text-neutral-400 font-bold">Models</h1>
+              <h1 className="text-l text-neutral-400 font-bold">
+                Quick Install
+              </h1>
               <input
                 checked={isUsingCustomModel === false} // This ensures the radio button is checked if isUsingCustomModel is true
                 onChange={() => switchModelType(false)}
@@ -193,43 +197,30 @@ const ModelSettings: React.FC = () => {
             </div>
             <div className="flex gap-4">
               <ModelDownloadButton
-                modelName="Mistral"
-                isDownloaded={models.mistral.isDownloaded}
-                modelRef="mistral-7B-v0.1"
-                isRecommanded={models.mistral.isRecommanded}
+                modelName="capybarahermes"
+                isDownloaded={models.capybarahermes.isDownloaded}
+                modelRef="capybarahermes-2.5-mistral-7b"
+                isRecommanded={models.capybarahermes.isRecommanded}
                 onSelectModel={() => {
-                  selectModel("mistral");
+                  selectModel("capybarahermes");
                 }}
                 downloadModel={() => {
-                  downloadModel("mistral");
+                  downloadModel("capybarahermes");
                 }}
-                isSelected={models.mistral.isSelected}
+                isSelected={models.capybarahermes.isSelected}
               />
               <ModelDownloadButton
-                modelName="Llama"
-                modelRef="llama-2-7b"
-                isDownloaded={models.llama.isDownloaded}
-                isRecommanded={models.llama.isRecommanded}
+                modelName="Openchat"
+                modelRef="openchat_3.5"
+                isDownloaded={models.openchat.isDownloaded}
+                isRecommanded={models.openchat.isRecommanded}
                 onSelectModel={() => {
-                  selectModel("llama");
+                  selectModel("openchat");
                 }}
                 downloadModel={() => {
-                  downloadModel("llama");
+                  downloadModel("openchat");
                 }}
-                isSelected={models.llama.isSelected}
-              />
-              <ModelDownloadButton
-                modelName="Mixtral"
-                modelRef="mixtral-8x7B-v0.1"
-                isDownloaded={models.mixtral.isDownloaded}
-                isRecommanded={models.mixtral.isRecommanded}
-                onSelectModel={() => {
-                  selectModel("mixtral");
-                }}
-                downloadModel={() => {
-                  downloadModel("mixtral");
-                }}
-                isSelected={models.mixtral.isSelected}
+                isSelected={models.openchat.isSelected}
               />
             </div>
             {isDownloading ? (
@@ -270,67 +261,16 @@ const ModelSettings: React.FC = () => {
                 onChange={() => switchModelType(true)}
               />
             </div>
-            <input
-              type="file"
-              onChange={handleChange}
+            <button
               className="bg-neutral-800 rounded p-2 w-3/4 focus:outline-none focus:border focus:border-neutral-700 border border-transparent"
-              // value={modelName}
-              placeholder="e.g. llama, mixtral"
-            />
+              onClick={selectFile}
+            >
+              Custom Model
+            </button>
+            <p className="text-xs text-neutral-400 mt-4">{customModelPath}</p>
           </div>
-          {/* <div className="flex gap-4">
-            {" "}
-            <div className="flex gap-2">
-              <p>Mistral</p>
-              <button onClick={downloadModel} className="">
-                {" "}
-                {models.includes(
-                  "capybarahermes-2.5-mistral-7b.Q6_K.gguf"
-                ) ? (
-                  <p>hehe</p>
-                ) : (
-                  <ArrowDownOnSquareIcon className="h-4 w-4 text-white hover:text-purple-400" />
-                )}
-              </button>
-            </div>
-            <div className="flex gap-2">
-              <p>Llama</p>
-              <button className="">
-                {" "}
-                <ArrowDownOnSquareIcon className="h-4 w-4 text-white hover:text-purple-400" />
-              </button>
-            </div>
-            <div className="flex gap-2">
-              <p>Mixtral</p>
-              <button className="">
-                {" "}
-                <ArrowDownOnSquareIcon className="h-4 w-4 text-white hover:text-purple-400" />
-              </button>
-            </div>
-          </div> */}
         </div>
-        {/* <div className="flex flex-col">
-          <p className="text-xs mb-2 text-neutral-500">Model name</p>
-
-          <input
-            type="text"
-            onChange={handleChange}
-            className="bg-neutral-800 rounded p-4 w-full focus:outline-none focus:border focus:border-neutral-700 border border-transparent"
-            value={modelName}
-            placeholder="e.g. llama, mixtral"
-          />
-        </div> */}
-        {/* <button
-          onClick={updateModel}
-          className="text-xs p-3 bg-neutral-900 border cursor-pointer border-solid border-neutral-800 rounded hover:bg-neutral-700 focus:bg-neutral-700 focus:outline-none"
-        >
-          Update
-        </button> */}
       </div>
-      {/* <p className="text-xs text-neutral-500">
-        Make sure the model is already installed on your machine by running
-        ollama pull [model_name].
-      </p> */}
     </div>
   );
 };
