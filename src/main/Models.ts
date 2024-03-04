@@ -5,6 +5,33 @@ import os from "os";
 import Downloader from "./Downloader";
 import { ipcMain } from "electron";
 import { windowManager } from "./WindowManager";
+import nodeLlamaCpp, { LlamaChatSession, LlamaContext } from "node-llama-cpp";
+import { getModelPath } from "./utils";
+import { sendMessageToOutputWindow } from "./IpcHandlers";
+
+export let session: LlamaChatSession | null = null;
+export let context: LlamaContext | null = null;
+
+export const modelInit = async () => {
+  const { LlamaModel, LlamaContext, LlamaChatSession } = await nodeLlamaCpp;
+
+  try {
+    const modelFilePath = getModelPath();
+    if (!modelFilePath) {
+      sendMessageToOutputWindow(
+        "ia-output",
+        "Please, select a model first in the settings."
+      );
+      return;
+    }
+
+    const model = new LlamaModel({ modelPath: modelFilePath });
+    context = new LlamaContext({ model });
+    session = new LlamaChatSession({ context });
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 export async function findDownloadedModels() {
   const homeDirectory = homedir();

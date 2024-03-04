@@ -1,10 +1,7 @@
 import { app, BrowserWindow, globalShortcut, clipboard } from "electron";
 import { windowManager } from "./main/WindowManager";
-import {
-  setupIpcHandlers,
-  sendClipboardContent,
-  aiInit,
-} from "./main/IpcHandlers";
+import { setupIpcHandlers, sendClipboardContent } from "./main/IpcHandlers";
+import { modelInit } from "./main/Models";
 
 function registerGlobalShortcuts() {
   globalShortcut.register("Ctrl+Space", () => {
@@ -32,7 +29,7 @@ function setupAppLifecycle() {
     windowManager.createSearchWindow();
     setupIpcHandlers();
     registerGlobalShortcuts();
-    aiInit();
+    modelInit();
     // app.dock.show();
   });
 

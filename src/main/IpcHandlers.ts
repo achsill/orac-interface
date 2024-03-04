@@ -1,59 +1,21 @@
 import { ipcMain, dialog } from "electron";
 import { windowManager } from "./WindowManager";
-import { homedir } from "os";
-import path from "path";
-import { calculateRecommandedModel, findDownloadedModels } from "./Models";
-import nodeLlamaCpp, { LlamaChatSession, LlamaContext } from "node-llama-cpp";
+import {
+  calculateRecommandedModel,
+  context,
+  findDownloadedModels,
+  modelInit,
+  session,
+} from "./Models";
 
 const Store = require("electron-store");
 const store = new Store();
 
-let session: LlamaChatSession | null = null;
-let context: LlamaContext | null = null;
-
-const sendMessageToOutputWindow = (
+export const sendMessageToOutputWindow = (
   messageType: string,
   messageContent: string
 ) => {
   windowManager.outputWindow?.webContents.send(messageType, messageContent);
-};
-
-const getModelPath = (): string | null => {
-  const homeDirectory = homedir();
-  const baseModelPath = path.join(homeDirectory, ".orac", "models");
-
-  if (store.get("isUsingCustomModel")) {
-    return store.get("customModelPath") || null;
-  }
-
-  const modelNameMap: { [key: string]: string } = {
-    capybarahermes: "capybarahermes-2.5-mistral-7b.Q6_K.gguf",
-    openchat: "openchat_3.5.Q6_K.gguf",
-  };
-
-  const modelName = store.get("selectedModel");
-  return modelName ? path.join(baseModelPath, modelNameMap[modelName]) : null;
-};
-
-export const aiInit = async () => {
-  const { LlamaModel, LlamaContext, LlamaChatSession } = await nodeLlamaCpp;
-
-  try {
-    const modelFilePath = getModelPath();
-    if (!modelFilePath) {
-      sendMessageToOutputWindow(
-        "ia-output",
-        "Please, select a model first in the settings."
-      );
-      return;
-    }
-
-    const model = new LlamaModel({ modelPath: modelFilePath });
-    context = new LlamaContext({ model });
-    session = new LlamaChatSession({ context });
-  } catch (error) {
-    console.error(error);
-  }
 };
 
 const sendMessages = async (input: string) => {
@@ -64,8 +26,7 @@ const sendMessages = async (input: string) => {
 
   try {
     sendMessageToOutputWindow("ia-input", input);
-
-    await session.prompt(input, {
+    session.prompt(input, {
       onToken: (chunk: any[]) => {
         const decoded = context?.decode(chunk);
         if (decoded) sendMessageToOutputWindow("ia-output", decoded);
@@ -75,8 +36,6 @@ const sendMessages = async (input: string) => {
     console.error(error);
   }
 };
-
-// Other functions remain mostly unchanged but should also be reviewed for similar improvements.
 
 const handleUserInput = async (input: string) => {
   if (windowManager?.searchWindow) {
@@ -170,14 +129,14 @@ export function setupIpcHandlers() {
 
   ipcMain.on("select-model", async (event: any, modelName: string) => {
     store.set("selectedModel", modelName);
-    aiInit();
+    modelInit();
   });
 
   ipcMain.on(
     "switch-model-type",
     async (event: any, isUsingCustomModel: boolean) => {
       store.set("isUsingCustomModel", isUsingCustomModel);
-      aiInit();
+      modelInit();
     }
   );
 
@@ -203,7 +162,7 @@ ipcMain.on("open-file-dialog", (event) => {
     .then((result) => {
       if (!result.canceled && result.filePaths.length > 0) {
         store.set("customModelPath", result.filePaths[0]);
-        aiInit();
+        modelInit();
         windowManager.settingsWindow?.webContents.send(
           "get-custom-model-path",
           result.filePaths[0]
