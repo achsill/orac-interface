@@ -7,6 +7,7 @@ import {
   modelInit,
   session,
 } from "./Models";
+import { Token } from "node-llama-cpp";
 
 const Store = require("electron-store");
 const store = new Store();
@@ -20,14 +21,18 @@ export const sendMessageToOutputWindow = (
 
 const sendMessages = async (input: string) => {
   if (!session) {
-    console.error("Session not initialized.");
+    sendMessageToOutputWindow("ia-input", input);
+    sendMessageToOutputWindow(
+      "ia-output",
+      "Please, select a model first in the settings."
+    );
     return;
   }
 
   try {
     sendMessageToOutputWindow("ia-input", input);
     session.prompt(input, {
-      onToken: (chunk: any[]) => {
+      onToken: (chunk: Token[]) => {
         const decoded = context?.decode(chunk);
         if (decoded) sendMessageToOutputWindow("ia-output", decoded);
       },
@@ -90,6 +95,7 @@ export function setupIpcHandlers() {
       const customModelPath = store.get("customModelPath");
       const downloadedModels = await findDownloadedModels();
       const recommandedModel = calculateRecommandedModel();
+      console.log("recoModel: ", recommandedModel);
       if (modelName)
         windowManager.settingsWindow?.webContents.send("init-model-name", {
           isUsingCustomModel,
