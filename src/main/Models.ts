@@ -17,7 +17,6 @@ export const modelInit = async () => {
 
   try {
     const modelFilePath = getModelPath();
-    console.log(modelFilePath);
     if (!modelFilePath) {
       sendMessageToOutputWindow(
         "ia-output",
@@ -25,7 +24,6 @@ export const modelInit = async () => {
       );
       return;
     }
-    console.log("??????");
     const model = new LlamaModel({ modelPath: modelFilePath });
     context = new LlamaContext({ model });
     session = new LlamaChatSession({ context });
@@ -73,9 +71,8 @@ export function calculateRecommandedModel() {
 }
 
 ipcMain.on("download-model", async (event: any, modelName: string) => {
-  let fileUrl;
-  let fileName;
-  console.log("md Name: ", modelName);
+  let fileUrl: string;
+  let fileName: string;
   if (modelName === "openchat") {
     fileUrl =
       "https://huggingface.co/TheBloke/openchat_3.5-GGUF/resolve/main/openchat_3.5.Q6_K.gguf";

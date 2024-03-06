@@ -24,7 +24,6 @@ export const getModelPath = (): string | null => {
   };
 
   const modelName = store.get("selectedModel");
-  console.log("modelName: ", modelName);
   if (modelName) {
     const modelPath = path.join(baseModelPath, modelNameMap[modelName]);
     if (fs.existsSync(modelPath)) {

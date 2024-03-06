@@ -30,7 +30,6 @@ function setupAppLifecycle() {
     setupIpcHandlers();
     registerGlobalShortcuts();
     modelInit();
-    // app.dock.show();
   });
 
   app.on("will-quit", () => {
