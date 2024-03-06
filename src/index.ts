@@ -50,5 +50,5 @@ function setupAppLifecycle() {
   });
 }
 
-// updateElectronApp();
+updateElectronApp();
 setupAppLifecycle();

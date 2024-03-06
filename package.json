@@ -11,6 +11,10 @@
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx ."
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/achsill/orac-interface"
+  },
   "keywords": [],
   "author": "achsill",
   "license": "MIT",
