@@ -1,45 +1,44 @@
-import { ipcMain } from "electron";
+import { ipcMain, dialog } from "electron";
 import { windowManager } from "./WindowManager";
-import ollama from "ollama";
+import {
+  calculateRecommandedModel,
+  context,
+  findDownloadedModels,
+  modelInit,
+  session,
+} from "./Models";
+import { Token } from "node-llama-cpp";
+
 const Store = require("electron-store");
 const store = new Store();
 
-const sendMessageToOutputWindow = (
+export const sendMessageToOutputWindow = (
   messageType: string,
-  messageContent: any
+  messageContent: string
 ) => {
   windowManager.outputWindow?.webContents.send(messageType, messageContent);
 };
 
 const sendMessages = async (input: string) => {
-  const modelName = store.get("modelName");
-  sendMessageToOutputWindow("ia-input", input);
-  if (modelName) {
-    try {
-      const message = {
-        role: "user",
-        content: input,
-      };
-      const response = await ollama.chat({
-        model: store.get("modelName"),
-        messages: [message],
-        stream: true,
-        keep_alive: -1,
-      });
-
-      for await (const part of response) {
-        sendMessageToOutputWindow("ia-output", part.message.content);
-      }
-
-      sendMessageToOutputWindow("ia-output-end", null);
-    } catch (e) {
-      handleError(e);
-    }
-  } else {
+  if (!session) {
+    sendMessageToOutputWindow("ia-input", input);
     sendMessageToOutputWindow(
-      "ia-error",
-      "Go to the settings to configure the model you want to use with the interface. Make sure you install it with Ollama before."
+      "ia-output",
+      "Please, select a model first in the settings."
     );
+    return;
+  }
+
+  try {
+    sendMessageToOutputWindow("ia-input", input);
+    session.prompt(input, {
+      onToken: (chunk: Token[]) => {
+        const decoded = context?.decode(chunk);
+        if (decoded) sendMessageToOutputWindow("ia-output", decoded);
+      },
+    });
+  } catch (error) {
+    console.error(error);
   }
 };
 
@@ -82,23 +81,6 @@ export const sendClipboardContent = async (clipboardContent: string) => {
   }
 };
 
-const handleError = (e: any) => {
-  console.error(e); // Log the full error
-
-  let errorMessage = "An unexpected error occurred.";
-  if (e.cause && e.cause.errno) {
-    if (e.cause.errno === -61) {
-      errorMessage =
-        "Ollama seems to not be running, make sure that you installed Ollama correctly, and that Ollama is running (ollama run serve in terminal).";
-    }
-  } else if (/model '.*' not found, try pulling it first/.test(e.message)) {
-    errorMessage =
-      "The model you're trying to use has not been found, make sure to run ollama pull [model_name] first.";
-  }
-
-  sendMessageToOutputWindow("ia-error", errorMessage);
-};
-
 export function setupIpcHandlers() {
   ipcMain.on("user-input", async (event, input: string) => {
     await handleUserInput(input);
@@ -106,13 +88,23 @@ export function setupIpcHandlers() {
 
   ipcMain.on("settings-button-clicked", async (event, input: string) => {
     windowManager.createSettingsWindow();
-    windowManager.settingsWindow.webContents.once("dom-ready", () => {
+    windowManager.settingsWindow.webContents.once("dom-ready", async () => {
       const modelName = store.get("modelName");
+      const selectedModel = store.get("selectedModel");
+      const isUsingCustomModel = store.get("isUsingCustomModel");
+      const customModelPath = store.get("customModelPath");
+      const downloadedModels = await findDownloadedModels();
+      const recommandedModel = calculateRecommandedModel();
+      console.log("recoModel: ", recommandedModel);
       if (modelName)
-        windowManager.settingsWindow?.webContents.send(
-          "init-model-name",
-          modelName
-        );
+        windowManager.settingsWindow?.webContents.send("init-model-name", {
+          isUsingCustomModel,
+          modelName,
+          downloadedModels,
+          selectedModel,
+          recommandedModel,
+          customModelPath,
+        });
     });
     windowManager.settingsWindow.focus();
   });
@@ -141,7 +133,49 @@ export function setupIpcHandlers() {
     windowManager.minimizeSearchWindow();
   });
 
+  ipcMain.on("select-model", async (event: any, modelName: string) => {
+    store.set("selectedModel", modelName);
+    modelInit();
+  });
+
+  ipcMain.on(
+    "switch-model-type",
+    async (event: any, isUsingCustomModel: boolean) => {
+      store.set("isUsingCustomModel", isUsingCustomModel);
+      modelInit();
+    }
+  );
+
   ipcMain.on("close-input-window", async () => {
     windowManager.closeSearchWindow();
   });
 }
+
+ipcMain.on("set-custom-model-path", async (event, modelPath: string) => {
+  try {
+    store.set("customModelPath", modelPath);
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+ipcMain.on("open-file-dialog", (event) => {
+  dialog
+    .showOpenDialog({
+      properties: ["openFile"],
+      filters: [{ name: "GGUF Files", extensions: ["gguf"] }],
+    })
+    .then((result) => {
+      if (!result.canceled && result.filePaths.length > 0) {
+        store.set("customModelPath", result.filePaths[0]);
+        modelInit();
+        windowManager.settingsWindow?.webContents.send(
+          "get-custom-model-path",
+          result.filePaths[0]
+        );
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});

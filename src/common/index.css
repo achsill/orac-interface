@@ -71,3 +71,18 @@ input {
   -webkit-user-select: none;
   -webkit-app-region: drag;
 }
+
+input[type="file"]::file-selector-button {
+  margin-right: 20px;
+  border: none;
+  background: plum;
+  padding: 10px 20px;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background: rgb(187, 72, 187);
+}
