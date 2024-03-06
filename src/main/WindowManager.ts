@@ -88,7 +88,6 @@ class WindowManager {
       SETTINGS_WINDOW_WEBPACK_ENTRY,
       "settingsWindow"
     );
-    this.settingsWindow.webContents.openDevTools();
   }
 
   closeSearchWindow() {
