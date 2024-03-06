@@ -113,7 +113,7 @@ function OutputRenderer() {
 
   return (
     <div id="ollamaOutput" className="flex flex-col h-screen">
-      <div className="flex w-full h-8 fixed p-4">
+      <div className="flex w-full h-8 fixed px-4 py-6 bg-stone-950/95 justify-center items-center">
         <button
           onClick={closeWindow}
           id="buttonSettings"

@@ -2,7 +2,7 @@ import { app, BrowserWindow, globalShortcut, clipboard } from "electron";
 import { windowManager } from "./main/WindowManager";
 import { setupIpcHandlers, sendClipboardContent } from "./main/IpcHandlers";
 import { modelInit } from "./main/Models";
-require("update-electron-app")();
+import { updateElectronApp } from "update-electron-app";
 
 function registerGlobalShortcuts() {
   globalShortcut.register("Ctrl+Space", () => {
@@ -50,4 +50,5 @@ function setupAppLifecycle() {
   });
 }
 
+// updateElectronApp();
 setupAppLifecycle();

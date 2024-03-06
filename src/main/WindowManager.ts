@@ -76,7 +76,7 @@ class WindowManager {
     this.settingsWindow = this.createWindow(
       {
         width: 620,
-        height: 460,
+        height: 480,
         titleBarStyle: "hidden",
         movable: true,
         resizable: false,
