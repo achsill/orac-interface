@@ -69,7 +69,6 @@ class WindowManager {
       OUTPUT_WINDOW_WEBPACK_ENTRY,
       "outputWindow"
     );
-    this.outputWindow.webContents.openDevTools();
   }
 
   createSettingsWindow() {
