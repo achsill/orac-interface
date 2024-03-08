@@ -169,6 +169,8 @@ const ModelSettings: React.FC = () => {
     return () => {
       window.api.removeListener("init-model-name", initModelName);
       window.api.removeListener("download-data", updateProgress);
+      window.api.removeListener("download-completed", completeDownload);
+      window.api.removeListener("get-custom-model-path", getCustomModelPath);
     };
   }, []);
 

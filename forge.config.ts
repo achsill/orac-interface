@@ -37,6 +37,7 @@ const config: ForgeConfig = {
           owner: "hlouar",
           name: "orac-interface",
         },
+
         prerelease: true,
       },
     },

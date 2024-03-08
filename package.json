@@ -1,7 +1,7 @@
 {
   "name": "Orac Interface",
   "productName": "Orac Interface",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "LLM interface",
   "main": ".webpack/main",
   "scripts": {
@@ -55,6 +55,7 @@
   },
   "dependencies": {
     "@electron-forge/maker-dmg": "^7.3.0",
+    "@electron-forge/publisher-github": "^7.3.0",
     "@heroicons/react": "^2.1.1",
     "electron-reload": "^2.0.0-alpha.1",
     "electron-reloader": "^1.2.3",

@@ -24,7 +24,7 @@ const sendMessages = async (input: string) => {
     sendMessageToOutputWindow("ia-input", input);
     sendMessageToOutputWindow(
       "ia-output",
-      "Please, select a model first in the settings."
+      "Before you can interact with the AI, you need to first select a model in the settings."
     );
     return;
   }
@@ -95,16 +95,14 @@ export function setupIpcHandlers() {
       const customModelPath = store.get("customModelPath");
       const downloadedModels = await findDownloadedModels();
       const recommandedModel = calculateRecommandedModel();
-      console.log("recoModel: ", recommandedModel);
-      if (modelName)
-        windowManager.settingsWindow?.webContents.send("init-model-name", {
-          isUsingCustomModel,
-          modelName,
-          downloadedModels,
-          selectedModel,
-          recommandedModel,
-          customModelPath,
-        });
+      windowManager.settingsWindow?.webContents.send("init-model-name", {
+        isUsingCustomModel,
+        modelName,
+        downloadedModels,
+        selectedModel,
+        recommandedModel,
+        customModelPath,
+      });
     });
     windowManager.settingsWindow.focus();
   });

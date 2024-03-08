@@ -20,7 +20,7 @@ export const modelInit = async () => {
     if (!modelFilePath) {
       sendMessageToOutputWindow(
         "ia-output",
-        "Please, select a model first in the settings."
+        "Before you can interact with the AI, you need to first select a model in the settings."
       );
       return;
     }
